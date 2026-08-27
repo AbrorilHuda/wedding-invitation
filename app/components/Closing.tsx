@@ -1,4 +1,5 @@
 import React from "react";
+import { WEDDING_CONFIG } from "../config/wedding";
 
 export function Closing() {
   return (
@@ -28,13 +29,13 @@ export function Closing() {
           </span>
         </div>
         <div className="names serif reveal-el">
-          Miftah
+          {WEDDING_CONFIG.groom.name}
           <br />
           <span style={{ fontStyle: "italic", fontSize: "0.5em", color: "#dcc79f" }}>
             &amp;
           </span>
           <br />
-          Sofia
+          {WEDDING_CONFIG.bride.name}
         </div>
         <p className="thanks reveal-el" style={{ marginTop: "24px" }}>
           Kami yang berbahagia beserta keluarga besar

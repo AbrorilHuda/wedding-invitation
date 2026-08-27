@@ -1,6 +1,9 @@
 import React from "react";
+import { WEDDING_CONFIG } from "../config/wedding";
 
 export function Profil() {
+  const { groom, bride } = WEDDING_CONFIG;
+
   return (
     <section className="bg-blush pad" id="profil">
       <div className="wrap" style={{ textAlign: "center" }}>
@@ -22,25 +25,25 @@ export function Profil() {
         <div style={{ marginTop: "56px" }} className="reveal-el">
           <div className="arch">
             <img
-              src="https://images.unsplash.com/photo-1519741497674-611481863552?crop=entropy&cs=srgb&fm=jpg&q=85&w=600"
-              alt="Miftah Pratama"
+              src={groom.photo}
+              alt={groom.fullName}
               loading="lazy"
             />
           </div>
-          <div className="profile-name serif">Miftah Pratama</div>
+          <div className="profile-name serif">{groom.fullName}</div>
           <div className="profile-role">The Groom</div>
           <div className="profile-parents">
-            Putra pertama dari
+            {groom.order}
             <br />
-            Bapak H. Suryadi &amp; Ibu Hj. Kartika
+            {groom.parents}
           </div>
           <div className="socials">
             <a
-              href="https://instagram.com"
+              href={groom.instagram}
               target="_blank"
               rel="noopener noreferrer"
               data-testid="groom-instagram"
-              aria-label="Instagram Miftah"
+              aria-label={`Instagram ${groom.name}`}
             >
               <svg
                 viewBox="0 0 24 24"
@@ -63,25 +66,25 @@ export function Profil() {
         <div className="reveal-el">
           <div className="arch">
             <img
-              src="https://images.unsplash.com/photo-1492175742197-ed20dc5a6bed?crop=entropy&cs=srgb&fm=jpg&q=85&w=600"
-              alt="Sofia Anindya"
+              src={bride.photo}
+              alt={bride.fullName}
               loading="lazy"
             />
           </div>
-          <div className="profile-name serif">Sofia Anindya</div>
+          <div className="profile-name serif">{bride.fullName}</div>
           <div className="profile-role">The Bride</div>
           <div className="profile-parents">
-            Putri kedua dari
+            {bride.order}
             <br />
-            Bapak H. Bambang &amp; Ibu Hj. Ratna
+            {bride.parents}
           </div>
           <div className="socials">
             <a
-              href="https://instagram.com"
+              href={bride.instagram}
               target="_blank"
               rel="noopener noreferrer"
               data-testid="bride-instagram"
-              aria-label="Instagram Sofia"
+              aria-label={`Instagram ${bride.name}`}
             >
               <svg
                 viewBox="0 0 24 24"

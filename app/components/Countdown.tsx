@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { WEDDING_CONFIG } from "../config/wedding";
 
-const TARGET_DATE = new Date("2026-09-20T11:00:00+07:00").getTime();
+const TARGET_DATE = new Date(WEDDING_CONFIG.event.dateIso).getTime();
 
 function pad(n: number): string {
   return n < 10 ? `0${n}` : `${n}`;

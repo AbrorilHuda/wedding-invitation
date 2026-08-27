@@ -1070,66 +1070,315 @@ h2.title {
 }
 
 /* KADO */
-.gift-card {
-  background: linear-gradient(135deg, #241f18, #332a1d);
-  color: #f2e7d5;
-  border-radius: 20px;
-  padding: 28px 24px;
-  box-shadow: var(--shadow);
-  border: 1px solid rgba(201, 165, 106, 0.25);
-  position: relative;
-  overflow: hidden;
-  margin-bottom: 16px;
-  text-align: left;
+.gift-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 440px;
+  margin: 0 auto;
 }
 
-.gift-card .bank {
-  font-size: 0.62rem;
-  letter-spacing: 0.3em;
+.gift-card {
+  background: linear-gradient(135deg, #1f1b16 0%, #2e261b 60%, #201a13 100%);
+  color: #f2e7d5;
+  border-radius: 22px;
+  padding: 24px 22px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(201, 165, 106, 0.3);
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.gift-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.35);
+  border-color: rgba(201, 165, 106, 0.5);
+}
+
+.gift-card::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(201, 165, 106, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.gift-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.bank-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  padding: 4px 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.bank-badge.dana-badge {
+  background: #118eea;
+  padding: 4px 10px;
+}
+
+.bank-badge.bca-badge {
+  background: #0060af;
+  padding: 4px 10px;
+}
+
+.bank-badge.mandiri-badge {
+  background: #003d79;
+  padding: 4px 10px;
+}
+
+.bank-badge.bni-badge {
+  background: #005e6a;
+  padding: 4px 10px;
+}
+
+.bank-badge.generic-badge {
+  background: rgba(255, 255, 255, 0.12);
+  color: #f6ecd8;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.card-chip {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.gift-card-body {
+  margin-bottom: 8px;
+}
+
+.bank-name-label {
+  font-size: 0.64rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #c9b48f;
+  font-weight: 500;
 }
 
 .gift-card .no {
   font-family: var(--serif);
-  font-size: 1.7rem;
-  letter-spacing: 0.06em;
-  margin: 10px 0 4px;
-  color: #f6ecd8;
+  font-size: 1.55rem;
+  letter-spacing: 0.08em;
+  margin: 8px 0 4px;
+  color: #fcf6e9;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .gift-card .an {
-  font-size: 0.78rem;
-  color: #cbb692;
+  font-size: 0.82rem;
+  color: #d1bfa0;
   font-weight: 300;
 }
 
-.copy-btn {
+.gift-card-footer {
   margin-top: 18px;
+}
+
+.copy-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   background: rgba(201, 165, 106, 0.14);
-  border: 1px solid rgba(201, 165, 106, 0.4);
-  color: #e9d4ab;
+  border: 1px solid rgba(201, 165, 106, 0.45);
+  color: #ebd9b5;
   padding: 10px 18px;
   border-radius: 100px;
-  font-size: 0.64rem;
-  letter-spacing: 0.2em;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-decoration: none;
 }
 
 .copy-btn:hover {
   background: var(--gold);
   color: #fff;
   border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(180, 138, 74, 0.3);
 }
 
 .copy-btn svg {
   width: 14px;
   height: 14px;
+}
+
+/* QRIS STYLES */
+.qris-card {
+  text-align: center;
+  background: linear-gradient(135deg, #241e17 0%, #2f251a 100%);
+}
+
+.qris-header-badge {
+  background: #ffffff;
+  padding: 5px 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.1rem;
+}
+
+.qris-sub {
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  color: #475569;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-left: 4px;
+}
+
+.qris-gpn-tag {
+  background: #ea1c24;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.qris-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 14px 0;
+}
+
+.qris-img-container {
+  background: #ffffff;
+  padding: 12px;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  max-width: 210px;
+  margin: 0 auto 12px;
+  transition: transform 0.3s ease;
+}
+
+.qris-img-container:hover {
+  transform: scale(1.03);
+}
+
+.qris-img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: contain;
+  display: block;
+}
+
+.qris-overlay-hint {
+  font-size: 0.58rem;
+  color: #475569;
+  letter-spacing: 0.05em;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+.qris-desc {
+  font-size: 0.76rem;
+  color: #cbb692;
+  font-weight: 300;
+  line-height: 1.4;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.qris-download-btn {
+  margin: 0 auto;
+}
+
+/* QRIS MODAL */
+.qris-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 8, 6, 0.88);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.qris-modal-content {
+  background: #ffffff;
+  color: #1e293b;
+  border-radius: 20px;
+  padding: 28px 24px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.qris-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: #f1f5f9;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background 0.2s;
+}
+
+.qris-modal-close:hover {
+  background: #e2e8f0;
+}
+
+.qris-modal-title {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 16px;
+}
+
+.qris-modal-img {
+  width: 100%;
+  max-width: 260px;
+  aspect-ratio: 1/1;
+  object-fit: contain;
+  margin: 0 auto;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.qris-modal-note {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 14px;
+  line-height: 1.4;
 }
 
 /* CLOSING */

@@ -1,4 +1,5 @@
 import React from "react";
+import { WEDDING_CONFIG } from "../config/wedding";
 
 interface FloatControlsProps {
   isVisible: boolean;
@@ -18,7 +19,7 @@ export function FloatControls({
 
     const url = window.location.href;
     const greeting = guestName ? ` untuk ${guestName}` : "";
-    const text = `Bismillah, dengan penuh kebahagiaan kami mengundang Anda${greeting} ke pernikahan Miftah & Sofia. Buka undangan: ${url}`;
+    const text = `Bismillah, dengan penuh kebahagiaan kami mengundang Anda${greeting} ke pernikahan ${WEDDING_CONFIG.groom.name} & ${WEDDING_CONFIG.bride.name}. Buka undangan: ${url}`;
     const shareUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
     window.open(shareUrl, "_blank", "noopener,noreferrer");
   };

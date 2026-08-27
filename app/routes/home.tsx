@@ -21,27 +21,27 @@ import { Closing } from "../components/Closing";
 import { FloatControls } from "../components/FloatControls";
 import { AudioPlayer } from "../components/AudioPlayer";
 import { Toast } from "../components/Toast";
+import { WEDDING_CONFIG } from "../config/wedding";
 
 export function meta({ location }: Route.MetaArgs) {
   const search = new URLSearchParams(location.search);
   const to = search.get("to");
+  const coupleName = `${WEDDING_CONFIG.groom.name} & ${WEDDING_CONFIG.bride.name}`;
   const guestTitle = to
-    ? `Undangan Pernikahan untuk ${to} — Miftah & Sofia`
-    : "Miftah & Sofia — Undangan Pernikahan";
+    ? `Undangan Pernikahan untuk ${to} — ${coupleName}`
+    : `${coupleName} — Undangan Pernikahan`;
 
   return [
     { title: guestTitle },
     {
       name: "description",
-      content:
-        "Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Anda untuk hadir di hari bahagia kami. Miftah & Sofia — 20 September 2026.",
+      content: `Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Anda untuk hadir di hari bahagia kami. ${coupleName} — ${WEDDING_CONFIG.event.dateDisplay}.`,
     },
     { property: "og:type", content: "website" },
-    { property: "og:title", content: "The Wedding of Miftah & Sofia" },
+    { property: "og:title", content: `The Wedding of ${coupleName}` },
     {
       property: "og:description",
-      content:
-        "Merupakan suatu kehormatan bagi kami apabila Anda berkenan hadir. 20 September 2026.",
+      content: `Merupakan suatu kehormatan bagi kami apabila Anda berkenan hadir. ${WEDDING_CONFIG.event.dateDisplay}.`,
     },
     {
       property: "og:image",
@@ -265,6 +265,7 @@ export default function Home() {
         guestName={guestName}
         isOpen={isOpen}
         onOpen={handleOpenInvitation}
+        onBeforeOpen={playMusic}
       />
 
       <FloatControls

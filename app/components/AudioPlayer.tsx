@@ -1,4 +1,5 @@
 import React, { forwardRef } from "react";
+import { WEDDING_CONFIG } from "../config/wedding";
 
 export interface AudioPlayerHandle {
   play: () => Promise<void>;
@@ -10,14 +11,9 @@ interface AudioPlayerProps {
 }
 
 export const AudioPlayer = forwardRef<HTMLAudioElement, AudioPlayerProps>(
-  (
-    {
-      src = "https://cdn.pixabay.com/download/audio/2022/03/10/audio_2c8d4f4b8f.mp3",
-    },
-    ref
-  ) => {
+  ({ src = WEDDING_CONFIG.musicUrl }, ref) => {
     return (
-      <audio id="bgm" loop preload="none" ref={ref}>
+      <audio id="bgm" loop preload="auto" ref={ref}>
         <source src={src} type="audio/mpeg" />
       </audio>
     );

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import type { Wish } from "../types/invitation";
+import { WEDDING_CONFIG } from "../config/wedding";
 
 const INITIAL_WISHES: Wish[] = [
   {
@@ -12,7 +13,7 @@ const INITIAL_WISHES: Wish[] = [
     id: "2",
     n: "Dewi Lestari",
     h: "Hadir",
-    p: "Selamat menempuh hidup baru Miftah & Sofia. Bahagia selalu ya!",
+    p: `Selamat menempuh hidup baru ${WEDDING_CONFIG.groom.name} & ${WEDDING_CONFIG.bride.name}. Bahagia selalu ya!`,
   },
   {
     id: "3",

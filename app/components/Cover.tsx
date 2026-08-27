@@ -1,13 +1,16 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 
+import { WEDDING_CONFIG } from "../config/wedding";
+
 interface CoverProps {
   guestName: string;
   isOpen: boolean;
   onOpen: () => void;
+  onBeforeOpen?: () => void;
 }
 
-export function Cover({ guestName, isOpen, onOpen }: CoverProps) {
+export function Cover({ guestName, isOpen, onOpen, onBeforeOpen }: CoverProps) {
   const coverRef = useRef<HTMLDivElement>(null);
   const introRunRef = useRef(false);
 
@@ -58,6 +61,10 @@ export function Cover({ guestName, isOpen, onOpen }: CoverProps) {
   }, []);
 
   const handleOpenClick = () => {
+    if (onBeforeOpen) {
+      onBeforeOpen();
+    }
+
     if (!coverRef.current) {
       onOpen();
       return;
@@ -87,7 +94,8 @@ export function Cover({ guestName, isOpen, onOpen }: CoverProps) {
         className="cover-bg"
         style={{
           backgroundImage:
-            'url("https://images.unsplash.com/photo-1606216794079-73f85bbd57d5?crop=entropy&cs=srgb&fm=jpg&q=85&w=1400")',
+            "url('./cover.webp')",
+          filter: " brightness(0.50) contrast(1.15)"
         }}
       />
       <div className="cover-shade" />
@@ -101,17 +109,17 @@ export function Cover({ guestName, isOpen, onOpen }: CoverProps) {
       <div className="cover-inner">
         <h1 className="cover-names">
           <span className="reveal-line">
-            <span>Miftah</span>
+            <span>{WEDDING_CONFIG.groom.name}</span>
           </span>
           <span className="cover-amp reveal-line">
             <span>&amp;</span>
           </span>
           <span className="reveal-line">
-            <span>Sofia</span>
+            <span>{WEDDING_CONFIG.bride.name}</span>
           </span>
         </h1>
         <div className="cover-date reveal-line">
-          <span>20 . 09 . 2026</span>
+          <span>{WEDDING_CONFIG.event.dateShort}</span>
         </div>
 
         <div className="guest-card fade-up">
