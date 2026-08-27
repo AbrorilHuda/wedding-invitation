@@ -1,0 +1,311 @@
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useSearchParams } from "react-router";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "lenis";
+
+import type { Route } from "./+types/home";
+import { Cover } from "../components/Cover";
+import { Ayat } from "../components/Ayat";
+import { Profil } from "../components/Profil";
+import { LoveStory } from "../components/LoveStory";
+import { Marquee } from "../components/Marquee";
+import { EventDetails } from "../components/EventDetails";
+import { Countdown } from "../components/Countdown";
+import { Gallery, GALLERY_PHOTOS } from "../components/Gallery";
+import { Lightbox } from "../components/Lightbox";
+import { Rsvp } from "../components/Rsvp";
+import { Guestbook } from "../components/Guestbook";
+import { DigitalGift } from "../components/DigitalGift";
+import { Closing } from "../components/Closing";
+import { FloatControls } from "../components/FloatControls";
+import { AudioPlayer } from "../components/AudioPlayer";
+import { Toast } from "../components/Toast";
+
+export function meta({ location }: Route.MetaArgs) {
+  const search = new URLSearchParams(location.search);
+  const to = search.get("to");
+  const guestTitle = to
+    ? `Undangan Pernikahan untuk ${to} — Miftah & Sofia`
+    : "Miftah & Sofia — Undangan Pernikahan";
+
+  return [
+    { title: guestTitle },
+    {
+      name: "description",
+      content:
+        "Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Anda untuk hadir di hari bahagia kami. Miftah & Sofia — 20 September 2026.",
+    },
+    { property: "og:type", content: "website" },
+    { property: "og:title", content: "The Wedding of Miftah & Sofia" },
+    {
+      property: "og:description",
+      content:
+        "Merupakan suatu kehormatan bagi kami apabila Anda berkenan hadir. 20 September 2026.",
+    },
+    {
+      property: "og:image",
+      content:
+        "https://images.unsplash.com/photo-1606216794079-73f85bbd57d5?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200",
+    },
+  ];
+}
+
+export default function Home() {
+  const [searchParams] = useSearchParams();
+  const rawTo = searchParams.get("to");
+  const autoOpen = searchParams.get("open") === "1";
+
+  const guestName = rawTo ? decodeURIComponent(rawTo.replace(/\+/g, " ")) : "Tamu Undangan";
+
+  const [isOpen, setIsOpen] = useState(autoOpen);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastVisible, setToastVisible] = useState(false);
+
+  // Lightbox state
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lenisRef = useRef<Lenis | null>(null);
+
+  const showToast = useCallback((msg: string) => {
+    setToastMessage(msg);
+    setToastVisible(true);
+
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
+
+    toastTimeoutRef.current = setTimeout(() => {
+      setToastVisible(false);
+    }, 2600);
+  }, []);
+
+  const playMusic = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    audio.volume = 0.55;
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch(() => {
+          setIsPlaying(false);
+        });
+    }
+  }, []);
+
+  const toggleMusic = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+    } else {
+      audio.volume = 0.55;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch(() => {
+            showToast("Musik tidak dapat diputar otomatis");
+          });
+      }
+    }
+  }, [isPlaying, showToast]);
+
+  const initAnimations = useCallback(() => {
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Lenis Smooth Scroll
+    try {
+      const lenis = new Lenis({
+        duration: 1.15,
+        smoothWheel: true,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      });
+      lenisRef.current = lenis;
+
+      function raf(time: number) {
+        lenis.raf(time);
+        requestAnimationFrame(raf);
+      }
+      requestAnimationFrame(raf);
+      lenis.on("scroll", ScrollTrigger.update);
+    } catch (e) {
+      // Fallback native scroll
+    }
+
+    // Scroll reveal animations
+    const revealElements = document.querySelectorAll(".reveal-el");
+    revealElements.forEach((el) => {
+      gsap.fromTo(
+        el,
+        { opacity: 0, y: 44 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 88%",
+          },
+        }
+      );
+    });
+
+    // Story photo parallax
+    const storyImgs = document.querySelectorAll(".story-photo img");
+    storyImgs.forEach((img) => {
+      gsap.fromTo(
+        img,
+        { yPercent: -8 },
+        {
+          yPercent: 8,
+          ease: "none",
+          scrollTrigger: {
+            trigger: img.parentElement,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: true,
+          },
+        }
+      );
+    });
+
+    // Closing photo parallax
+    const closingBg = document.querySelector("#closing .closing-bg");
+    if (closingBg) {
+      gsap.to(closingBg, {
+        yPercent: 18,
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#closing",
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+    }
+
+    // Infinite Marquee
+    const marqueeTrack = document.querySelector("#marqueeTrack");
+    if (marqueeTrack) {
+      gsap.to(marqueeTrack, {
+        xPercent: -50,
+        ease: "none",
+        repeat: -1,
+        duration: 18,
+      });
+    }
+
+    setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 300);
+  }, []);
+
+  const handleOpenInvitation = useCallback(() => {
+    setIsOpen(true);
+    document.body.classList.remove("locked");
+
+    playMusic();
+
+    setTimeout(() => {
+      initAnimations();
+    }, 100);
+  }, [playMusic, initAnimations]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      document.body.classList.add("locked");
+    } else {
+      document.body.classList.remove("locked");
+      initAnimations();
+    }
+
+    return () => {
+      document.body.classList.remove("locked");
+      if (lenisRef.current) {
+        lenisRef.current.destroy();
+      }
+    };
+  }, [isOpen, initAnimations]);
+
+  // Handle Photo click in gallery
+  const handlePhotoClick = (index: number) => {
+    setActivePhotoIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const handleCloseLightbox = () => {
+    setLightboxOpen(false);
+  };
+
+  const handlePrevPhoto = () => {
+    setActivePhotoIndex((prev) => (prev - 1 + GALLERY_PHOTOS.length) % GALLERY_PHOTOS.length);
+  };
+
+  const handleNextPhoto = () => {
+    setActivePhotoIndex((prev) => (prev + 1) % GALLERY_PHOTOS.length);
+  };
+
+  return (
+    <>
+      <Cover
+        guestName={guestName}
+        isOpen={isOpen}
+        onOpen={handleOpenInvitation}
+      />
+
+      <FloatControls
+        isVisible={isOpen}
+        isPlaying={isPlaying}
+        onToggleMusic={toggleMusic}
+        guestName={rawTo ? guestName : undefined}
+      />
+
+      <AudioPlayer ref={audioRef} />
+
+      <main id="main" className={isOpen ? "show" : ""}>
+        <Ayat />
+        <Profil />
+        <LoveStory />
+        <Marquee />
+        <EventDetails onShowToast={showToast} />
+        <Countdown />
+        <Gallery onPhotoClick={handlePhotoClick} />
+        <Rsvp
+          initialName={rawTo ? guestName : ""}
+          onShowToast={showToast}
+        />
+        <Guestbook
+          initialName={rawTo ? guestName : ""}
+          onShowToast={showToast}
+        />
+        <DigitalGift onShowToast={showToast} />
+        <Closing />
+      </main>
+
+      <Lightbox
+        isOpen={lightboxOpen}
+        currentIndex={activePhotoIndex}
+        photos={GALLERY_PHOTOS}
+        onClose={handleCloseLightbox}
+        onPrev={handlePrevPhoto}
+        onNext={handleNextPhoto}
+      />
+
+      <Toast message={toastMessage} visible={toastVisible} />
+    </>
+  );
+}
