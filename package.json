@@ -1,7 +1,8 @@
 {
-  "name": "",
+  "name": "wedding-invitation",
   "private": true,
   "type": "module",
+  "author": "AbrorilHuda",
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",

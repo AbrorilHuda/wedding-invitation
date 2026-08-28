@@ -42,7 +42,9 @@ export function Closing() {
           <br />
           kedua mempelai.
         </p>
-        <div className="credit reveal-el">Create By AbrorilHuda</div>
+        <div className="credit reveal-el">
+          Create By AbrorilHuda
+        </div>
       </div>
     </section>
   );
