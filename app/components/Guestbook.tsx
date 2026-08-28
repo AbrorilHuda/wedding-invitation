@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import type { Wish } from "../types/invitation";
 import { WEDDING_CONFIG } from "../config/wedding";
 import { sendWish, subscribeToWishes, type RsvpPayload } from "../services/weddingService";
@@ -28,6 +28,13 @@ const INITIAL_WISHES: Wish[] = [
   },
 ];
 
+const COOLDOWN_DURATION = 30; // 30 seconds cooldown between submissions
+const MAX_MESSAGE_LENGTH = 300;
+const MIN_MESSAGE_LENGTH = 5;
+
+// URL/Link pattern detector for spam protection
+const LINK_SPAM_REGEX = /(https?:\/\/|www\.|t\.me\/|wa\.me\/|bit\.ly\/|[a-zA-Z0-9-]+\.(com|id|net|org|xyz|top|online|site|vip|shop|fun|click|link|info)\b)/i;
+
 function getInitial(name: string): string {
   if (!name) return "✦";
   const parts = name.trim().split(" ");
@@ -50,6 +57,11 @@ export function Guestbook({ userRsvp: userRsvpProp, onShowToast }: GuestbookProp
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Anti-spam states
+  const [honeypot, setHoneypot] = useState("");
+  const [cooldown, setCooldown] = useState(0);
+  const lastSubmittedMsg = useRef<string>("");
+
   // Sync prop or check localStorage for active RSVP
   useEffect(() => {
     if (userRsvpProp) {
@@ -70,6 +82,37 @@ export function Guestbook({ userRsvp: userRsvpProp, onShowToast }: GuestbookProp
     }
   }, [userRsvpProp]);
 
+  // Check existing cooldown on mount
+  useEffect(() => {
+    try {
+      const lastWishTime = localStorage.getItem("wedding_last_wish_time");
+      if (lastWishTime) {
+        const elapsed = Math.floor((Date.now() - parseInt(lastWishTime, 10)) / 1000);
+        if (elapsed < COOLDOWN_DURATION) {
+          setCooldown(COOLDOWN_DURATION - elapsed);
+        }
+      }
+    } catch (e) {
+      // Ignore
+    }
+  }, []);
+
+  // Cooldown countdown interval
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
   // Subscribe to realtime wishes
   useEffect(() => {
     const unsubscribe = subscribeToWishes((liveWishes) => {
@@ -83,15 +126,48 @@ export function Guestbook({ userRsvp: userRsvpProp, onShowToast }: GuestbookProp
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmedMessage = message.trim();
+
+    // 1. Honeypot check (trap automated spam bots)
+    if (honeypot.trim() !== "") {
+      // Silently pretend it worked to confuse bot
+      setMessage("");
+      onShowToast("Ucapan & doa terkirim! ✦");
+      return;
+    }
 
     if (!activeRsvp) {
       onShowToast("Silakan isi konfirmasi RSVP terlebih dahulu");
       return;
     }
 
-    if (!trimmedMessage) {
-      onShowToast("Mohon tuliskan ucapan & doa Anda");
+    // 2. Cooldown check
+    if (cooldown > 0) {
+      onShowToast(`Mohon tunggu ${cooldown} detik sebelum mengirim lagi`);
+      return;
+    }
+
+    const trimmedMessage = message.trim();
+
+    // 3. Length validation
+    if (!trimmedMessage || trimmedMessage.length < MIN_MESSAGE_LENGTH) {
+      onShowToast(`Ucapan terlalu pendek (minimal ${MIN_MESSAGE_LENGTH} karakter)`);
+      return;
+    }
+
+    if (trimmedMessage.length > MAX_MESSAGE_LENGTH) {
+      onShowToast(`Ucapan maksimal ${MAX_MESSAGE_LENGTH} karakter`);
+      return;
+    }
+
+    // 4. Link / Spam domain detection
+    if (LINK_SPAM_REGEX.test(trimmedMessage)) {
+      onShowToast("Demi keamanan, dilarang menyertakan link/tautan website");
+      return;
+    }
+
+    // 5. Duplicate message check
+    if (lastSubmittedMsg.current && lastSubmittedMsg.current === trimmedMessage) {
+      onShowToast("Anda sudah mengirimkan ucapan ini");
       return;
     }
 
@@ -110,7 +186,17 @@ export function Guestbook({ userRsvp: userRsvpProp, onShowToast }: GuestbookProp
         return [addedWish, ...prev];
       });
 
+      lastSubmittedMsg.current = trimmedMessage;
       setMessage("");
+      
+      // Start cooldown
+      setCooldown(COOLDOWN_DURATION);
+      try {
+        localStorage.setItem("wedding_last_wish_time", Date.now().toString());
+      } catch (e) {
+        // Ignore
+      }
+
       onShowToast("Ucapan & doa terkirim! ✦");
     } catch (err) {
       onShowToast("Gagal mengirim ucapan");
@@ -164,6 +250,29 @@ export function Guestbook({ userRsvp: userRsvpProp, onShowToast }: GuestbookProp
               style={{ textAlign: "left" }}
               onSubmit={handleSubmit}
             >
+              {/* Bot Honeypot Trap (Hidden from humans) */}
+              <div
+                style={{
+                  position: "absolute",
+                  left: "-9999px",
+                  opacity: 0,
+                  height: 0,
+                  width: 0,
+                  overflow: "hidden",
+                  pointerEvents: "none",
+                }}
+                aria-hidden="true"
+              >
+                <input
+                  type="text"
+                  name="user_homepage_confirm"
+                  tabIndex={-1}
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+
               {/* Sender preview badge */}
               <div className="wish-sender-bar">
                 <div className="wish-avatar">{getInitial(activeRsvp.name)}</div>
@@ -177,11 +286,23 @@ export function Guestbook({ userRsvp: userRsvpProp, onShowToast }: GuestbookProp
               </div>
 
               <div className="field" style={{ marginTop: "16px" }}>
-                <label htmlFor="wishPesan">Tuliskan Ucapan &amp; Doa</label>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                  <label htmlFor="wishPesan" style={{ margin: 0 }}>Tuliskan Ucapan &amp; Doa</label>
+                  <span
+                    style={{
+                      fontSize: "0.68rem",
+                      color: message.length >= MAX_MESSAGE_LENGTH ? "#b91c1c" : "var(--muted)",
+                      fontWeight: message.length >= MAX_MESSAGE_LENGTH ? 600 : 400,
+                    }}
+                  >
+                    {message.length}/{MAX_MESSAGE_LENGTH}
+                  </span>
+                </div>
                 <textarea
                   id="wishPesan"
                   placeholder="Tuliskan ucapan selamat &amp; doa terbaik Anda untuk kedua mempelai..."
                   required
+                  maxLength={MAX_MESSAGE_LENGTH}
                   data-testid="wish-message-input"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
@@ -192,9 +313,17 @@ export function Guestbook({ userRsvp: userRsvpProp, onShowToast }: GuestbookProp
                 type="submit"
                 className="btn btn-solid btn-full"
                 data-testid="wish-submit-button"
-                disabled={isSubmitting}
+                disabled={isSubmitting || cooldown > 0}
+                style={{
+                  opacity: cooldown > 0 ? 0.75 : 1,
+                  cursor: cooldown > 0 ? "not-allowed" : "pointer",
+                }}
               >
-                {isSubmitting ? "Mengirim..." : "Kirim Ucapan & Doa"}
+                {isSubmitting
+                  ? "Mengirim..."
+                  : cooldown > 0
+                  ? `Tunggu ${cooldown} detik...`
+                  : "Kirim Ucapan & Doa"}
               </button>
             </form>
           )}
@@ -258,4 +387,5 @@ export function Guestbook({ userRsvp: userRsvpProp, onShowToast }: GuestbookProp
     </>
   );
 }
+
 

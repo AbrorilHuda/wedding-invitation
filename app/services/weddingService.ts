@@ -91,7 +91,6 @@ export async function sendWish(data: WishPayload): Promise<Wish> {
 
   if (isFirebaseConfigured && db) {
     try {
-      console.log("🔥 [Firebase] Mengirim ucapan ke collection 'wishes' di Firestore...", data);
       const docRef = await addDoc(collection(db, "wishes"), {
         name: data.name,
         status: data.status,
