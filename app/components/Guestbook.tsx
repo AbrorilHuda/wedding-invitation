@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import type { Wish } from "../types/invitation";
 import { WEDDING_CONFIG } from "../config/wedding";
+import { sendWish, subscribeToWishes, type RsvpPayload } from "../services/weddingService";
+import { AllWishesModal } from "./AllWishesModal";
 
 const INITIAL_WISHES: Wish[] = [
   {
@@ -37,143 +39,223 @@ function getInitial(name: string): string {
 
 interface GuestbookProps {
   initialName?: string;
+  userRsvp?: RsvpPayload | null;
   onShowToast: (msg: string) => void;
 }
 
-export function Guestbook({ initialName = "", onShowToast }: GuestbookProps) {
+export function Guestbook({ userRsvp: userRsvpProp, onShowToast }: GuestbookProps) {
   const [wishes, setWishes] = useState<Wish[]>(INITIAL_WISHES);
-  const [name, setName] = useState(initialName);
+  const [activeRsvp, setActiveRsvp] = useState<RsvpPayload | null>(userRsvpProp || null);
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Sync prop or check localStorage for active RSVP
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("wedding_wishes_miftah_sofia");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setWishes(parsed);
-        }
-      }
-    } catch (err) {
-      // Ignore localStorage error in private mode / SSR
-    }
-  }, []);
-
-  useEffect(() => {
-    if (initialName && !name) {
-      setName(initialName);
-    }
-  }, [initialName, name]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmedName = name.trim();
-    const trimmedMessage = message.trim();
-
-    if (!trimmedName || !trimmedMessage) {
-      onShowToast("Mohon lengkapi ucapan Anda");
+    if (userRsvpProp) {
+      setActiveRsvp(userRsvpProp);
       return;
     }
 
-    const newWish: Wish = {
-      id: Date.now().toString(),
-      n: trimmedName,
-      h: "Hadir",
-      p: trimmedMessage,
-      createdAt: "Baru saja",
-    };
-
-    const updated = [newWish, ...wishes];
-    setWishes(updated);
-
     try {
-      localStorage.setItem(
-        "wedding_wishes_miftah_sofia",
-        JSON.stringify(updated)
-      );
-    } catch (err) {
+      const stored = localStorage.getItem("my_wedding_rsvp");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed?.name) {
+          setActiveRsvp(parsed);
+        }
+      }
+    } catch (e) {
       // Ignore
     }
+  }, [userRsvpProp]);
 
-    setMessage("");
-    onShowToast("Ucapan terkirim ✦");
+  // Subscribe to realtime wishes
+  useEffect(() => {
+    const unsubscribe = subscribeToWishes((liveWishes) => {
+      if (liveWishes && liveWishes.length > 0) {
+        setWishes(liveWishes);
+      }
+    }, INITIAL_WISHES);
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmedMessage = message.trim();
+
+    if (!activeRsvp) {
+      onShowToast("Silakan isi konfirmasi RSVP terlebih dahulu");
+      return;
+    }
+
+    if (!trimmedMessage) {
+      onShowToast("Mohon tuliskan ucapan & doa Anda");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const addedWish = await sendWish({
+        name: activeRsvp.name,
+        status: activeRsvp.status,
+        message: trimmedMessage,
+      });
+
+      // Optimistic update if offline / local
+      setWishes((prev) => {
+        if (prev.some((w) => w.id === addedWish.id)) return prev;
+        return [addedWish, ...prev];
+      });
+
+      setMessage("");
+      onShowToast("Ucapan & doa terkirim! ✦");
+    } catch (err) {
+      onShowToast("Gagal mengirim ucapan");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  const previewWishes = wishes.slice(0, 3);
+
   return (
-    <section className="bg-cream pad" id="ucapan">
-      <div className="wrap" style={{ textAlign: "center" }}>
-        <span className="num-tag reveal-el">06 — Doa &amp; Restu</span>
-        <h2 className="title reveal-el" style={{ marginTop: "10px" }}>
-          Ucapan &amp; Doa
-        </h2>
-        <p
-          className="lede reveal-el"
-          style={{ margin: "16px auto 30px", textAlign: "center" }}
-        >
-          Berikan doa dan ucapan terbaik untuk kedua mempelai.
-        </p>
-
-        <form
-          id="wishForm"
-          className="reveal-el"
-          style={{ textAlign: "left" }}
-          onSubmit={handleSubmit}
-        >
-          <div className="field">
-            <label htmlFor="wishNama">Nama Anda</label>
-            <input
-              type="text"
-              id="wishNama"
-              placeholder="Nama Anda"
-              required
-              data-testid="wish-name-input"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-
-          <div className="field">
-            <label htmlFor="wishPesan">Ucapan &amp; Doa</label>
-            <textarea
-              id="wishPesan"
-              placeholder="Tuliskan ucapan &amp; doa Anda..."
-              required
-              data-testid="wish-message-input"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn-solid btn-full"
-            data-testid="wish-submit-button"
+    <>
+      <section className="bg-cream pad" id="ucapan">
+        <div className="wrap" style={{ textAlign: "center" }}>
+          <span className="num-tag reveal-el">06 — Doa &amp; Restu</span>
+          <h2 className="title reveal-el" style={{ marginTop: "10px" }}>
+            Ucapan &amp; Doa
+          </h2>
+          <p
+            className="lede reveal-el"
+            style={{ margin: "16px auto 30px", textAlign: "center" }}
           >
-            Kirim Ucapan &amp; Doa
-          </button>
-        </form>
+            Berikan doa dan ucapan terbaik untuk kedua mempelai.
+          </p>
 
-        <div className="wish-list" id="wishList" data-testid="wish-list">
-          {wishes.map((w) => (
-            <div key={w.id || w.n + w.p} className="wish">
-              <div className="wish-avatar">{getInitial(w.n)}</div>
-              <div className="wish-content">
-                <div className="top">
-                  <span className="nm serif">{w.n}</span>
-                  <div className="wish-meta">
-                    {w.createdAt && <span className="wish-time">{w.createdAt}</span>}
-                    <span className={`badge ${w.h === "Tidak Hadir" ? "badge-absent" : ""}`}>
-                      {w.h}
-                    </span>
-                  </div>
-                </div>
-                <p>{w.p}</p>
+          {!activeRsvp ? (
+            /* LOCKED STATE: Guest hasn't filled RSVP yet */
+            <div className="wish-locked-card reveal-el">
+              <div className="locked-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
               </div>
+              <h3 className="serif locked-title">Konfirmasi Kehadiran Terlebih Dahulu</h3>
+              <p className="locked-desc">
+                Silakan lakukan konfirmasi kehadiran (RSVP) di atas sebelum menuliskan ucapan &amp; doa untuk mempelai.
+              </p>
+              <a href="#rsvp" className="btn btn-solid btn-go-rsvp">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: "14px", height: "14px" }}>
+                  <path d="M12 19V5M5 12l7-7 7 7" />
+                </svg>
+                Isi RSVP Sekarang
+              </a>
             </div>
-          ))}
+          ) : (
+            /* UNLOCKED FORM: Guest has completed RSVP */
+            <form
+              id="wishForm"
+              className="reveal-el"
+              style={{ textAlign: "left" }}
+              onSubmit={handleSubmit}
+            >
+              {/* Sender preview badge */}
+              <div className="wish-sender-bar">
+                <div className="wish-avatar">{getInitial(activeRsvp.name)}</div>
+                <div className="wish-sender-text">
+                  <div className="sender-label">Mengirim sebagai</div>
+                  <div className="sender-name serif">{activeRsvp.name}</div>
+                </div>
+                <span className={`badge ${activeRsvp.status === "Tidak Hadir" ? "badge-absent" : ""}`}>
+                  {activeRsvp.status}
+                </span>
+              </div>
+
+              <div className="field" style={{ marginTop: "16px" }}>
+                <label htmlFor="wishPesan">Tuliskan Ucapan &amp; Doa</label>
+                <textarea
+                  id="wishPesan"
+                  placeholder="Tuliskan ucapan selamat &amp; doa terbaik Anda untuk kedua mempelai..."
+                  required
+                  data-testid="wish-message-input"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="btn btn-solid btn-full"
+                data-testid="wish-submit-button"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Mengirim..." : "Kirim Ucapan & Doa"}
+              </button>
+            </form>
+          )}
+
+          {/* List of Preview Wishes */}
+          <div className="wish-list" id="wishList" data-testid="wish-list">
+            {previewWishes.map((w) => (
+              <div key={w.id || w.n + w.p} className="wish">
+                <div className="wish-avatar">{getInitial(w.n)}</div>
+                <div className="wish-content">
+                  <div className="top">
+                    <span className="nm serif">{w.n}</span>
+                    <div className="wish-meta">
+                      {w.createdAt && (
+                        <span className="wish-time">{w.createdAt}</span>
+                      )}
+                      <span
+                        className={`badge ${
+                          w.h === "Tidak Hadir" ? "badge-absent" : ""
+                        }`}
+                      >
+                        {w.h}
+                      </span>
+                    </div>
+                  </div>
+                  <p>{w.p}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {wishes.length > 3 && (
+            <div style={{ marginTop: "24px" }} className="reveal-el">
+              <button
+                type="button"
+                className="btn btn-ghost see-all-wishes-btn"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  style={{ width: "16px", height: "16px" }}
+                >
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                </svg>
+                Lihat Semua Ucapan &amp; Doa ({wishes.length})
+              </button>
+            </div>
+          )}
         </div>
-      </div>
-    </section>
+      </section>
+
+      <AllWishesModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        wishes={wishes}
+      />
+    </>
   );
 }
 

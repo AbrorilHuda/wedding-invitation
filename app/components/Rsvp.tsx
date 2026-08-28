@@ -1,27 +1,20 @@
 import React, { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
-
-interface RsvpData {
-  name: string;
-  status: "Hadir" | "Tidak Hadir";
-  count: string;
-  message: string;
-  timestamp?: string;
-}
+import { sendRsvp, type RsvpPayload } from "../services/weddingService";
 
 interface RsvpProps {
   initialName?: string;
   onShowToast: (msg: string) => void;
-  onSubmitSuccess?: (rsvpData: RsvpData) => void;
+  onSubmitSuccess?: (rsvpData: RsvpPayload) => void;
 }
 
 export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpProps) {
   const [name, setName] = useState(initialName);
   const [status, setStatus] = useState<"Hadir" | "Tidak Hadir">("Hadir");
   const [count, setCount] = useState("1 Orang");
-  const [message, setMessage] = useState("");
-  const [savedRsvp, setSavedRsvp] = useState<RsvpData | null>(null);
+  const [savedRsvp, setSavedRsvp] = useState<RsvpPayload | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Load existing RSVP from localStorage
   useEffect(() => {
@@ -34,7 +27,9 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
           setName(parsed.name);
           setStatus(parsed.status || "Hadir");
           setCount(parsed.count || "1 Orang");
-          setMessage(parsed.message || "");
+          if (onSubmitSuccess) {
+            onSubmitSuccess(parsed);
+          }
         }
       }
     } catch (e) {
@@ -49,7 +44,7 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
     }
   }, [initialName, name, savedRsvp]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedName = name.trim();
 
@@ -57,6 +52,8 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
       onShowToast("Mohon isi nama Anda");
       return;
     }
+
+    setIsSubmitting(true);
 
     // Trigger celebration if Hadir
     if (status === "Hadir") {
@@ -72,27 +69,26 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
       }
     }
 
-    const rsvpPayload: RsvpData = {
+    const rsvpPayload: RsvpPayload = {
       name: trimmedName,
       status,
       count: status === "Hadir" ? count : "0 Orang",
-      message: message.trim(),
       timestamp: new Date().toISOString(),
     };
 
-    // Save to local storage
     try {
-      localStorage.setItem("my_wedding_rsvp", JSON.stringify(rsvpPayload));
+      await sendRsvp(rsvpPayload);
       setSavedRsvp(rsvpPayload);
       setIsEditing(false);
+      onShowToast(`Konfirmasi kehadiran berhasil dikirim! ✦`);
+
+      if (onSubmitSuccess) {
+        onSubmitSuccess(rsvpPayload);
+      }
     } catch (err) {
-      // Ignore
-    }
-
-    onShowToast(`Terima kasih, ${trimmedName}! ✦`);
-
-    if (onSubmitSuccess) {
-      onSubmitSuccess(rsvpPayload);
+      onShowToast("Gagal menyimpan konfirmasi");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -124,9 +120,9 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
               Status: <strong>{savedRsvp.status}</strong>
               {savedRsvp.status === "Hadir" && ` (${savedRsvp.count})`}
             </div>
-            {savedRsvp.message && (
-              <p className="confirmed-msg">&ldquo;{savedRsvp.message}&rdquo;</p>
-            )}
+            <p className="confirmed-msg">
+              Terima kasih atas konfirmasi Anda. Silakan berikan ucapan &amp; doa di bawah.
+            </p>
             <button
               type="button"
               className="btn-edit-rsvp"
@@ -204,17 +200,6 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
               </div>
             )}
 
-            <div className="field">
-              <label htmlFor="rsvpPesan">Pesan (opsional)</label>
-              <textarea
-                id="rsvpPesan"
-                placeholder="Tuliskan pesan singkat..."
-                data-testid="rsvp-message-input"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-            </div>
-
             <div className="rsvp-btn-row">
               {isEditing && savedRsvp && (
                 <button
@@ -230,9 +215,10 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
                 type="submit"
                 className="btn btn-solid btn-full"
                 data-testid="rsvp-submit-button"
+                disabled={isSubmitting}
                 style={{ flex: 2 }}
               >
-                {savedRsvp ? "Perbarui Konfirmasi" : "Kirim Konfirmasi"}
+                {isSubmitting ? "Menyimpan..." : savedRsvp ? "Perbarui Konfirmasi" : "Kirim Konfirmasi Kehadiran"}
               </button>
             </div>
           </form>

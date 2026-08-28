@@ -67,6 +67,9 @@ export default function Home() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
+  // RSVP state to unlock Guestbook
+  const [userRsvp, setUserRsvp] = useState<import("../services/weddingService").RsvpPayload | null>(null);
+
   const audioRef = useRef<HTMLAudioElement>(null);
   const toastTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lenisRef = useRef<Lenis | null>(null);
@@ -288,9 +291,11 @@ export default function Home() {
         <Rsvp
           initialName={rawTo ? guestName : ""}
           onShowToast={showToast}
+          onSubmitSuccess={(data) => setUserRsvp(data)}
         />
         <Guestbook
           initialName={rawTo ? guestName : ""}
+          userRsvp={userRsvp}
           onShowToast={showToast}
         />
         <DigitalGift onShowToast={showToast} />
