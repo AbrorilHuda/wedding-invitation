@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { sendRsvp, type RsvpPayload } from "../services/weddingService";
+import { containsProfanity } from "../utils/contentFilter";
+
+const RSVP_COOLDOWN_DURATION = 15; // 15 seconds cooldown between RSVP submissions
 
 interface RsvpProps {
   initialName?: string;
@@ -15,6 +18,10 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
   const [savedRsvp, setSavedRsvp] = useState<RsvpPayload | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Anti-spam states
+  const [honeypot, setHoneypot] = useState("");
+  const [cooldown, setCooldown] = useState(0);
 
   // Load existing RSVP from localStorage
   useEffect(() => {
@@ -37,6 +44,37 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
     }
   }, []);
 
+  // Check existing cooldown on mount
+  useEffect(() => {
+    try {
+      const lastRsvpTime = localStorage.getItem("wedding_last_rsvp_time");
+      if (lastRsvpTime) {
+        const elapsed = Math.floor((Date.now() - parseInt(lastRsvpTime, 10)) / 1000);
+        if (elapsed < RSVP_COOLDOWN_DURATION) {
+          setCooldown(RSVP_COOLDOWN_DURATION - elapsed);
+        }
+      }
+    } catch (e) {
+      // Ignore
+    }
+  }, []);
+
+  // Cooldown countdown interval
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
   // Update name if prop changes and not edited yet
   useEffect(() => {
     if (initialName && !name && !savedRsvp) {
@@ -46,10 +84,33 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 1. Honeypot check (bot trap)
+    if (honeypot.trim() !== "") {
+      onShowToast("Konfirmasi kehadiran berhasil disimpan! ✦");
+      return;
+    }
+
+    // 2. Cooldown check
+    if (cooldown > 0) {
+      onShowToast(`Mohon tunggu ${cooldown} detik sebelum memperbarui lagi`);
+      return;
+    }
+
     const trimmedName = name.trim();
 
-    if (!trimmedName) {
-      onShowToast("Mohon isi nama Anda");
+    if (!trimmedName || trimmedName.length < 2) {
+      onShowToast("Mohon isi nama lengkap Anda (min. 2 karakter)");
+      return;
+    }
+
+    if (trimmedName.length > 80) {
+      onShowToast("Nama maksimal 80 karakter");
+      return;
+    }
+
+    if (containsProfanity(trimmedName)) {
+      onShowToast("Nama mengandung kata tidak pantas. Mohon gunakan nama yang sopan.");
       return;
     }
 
@@ -80,6 +141,15 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
       await sendRsvp(rsvpPayload);
       setSavedRsvp(rsvpPayload);
       setIsEditing(false);
+
+      // Start cooldown
+      setCooldown(RSVP_COOLDOWN_DURATION);
+      try {
+        localStorage.setItem("wedding_last_rsvp_time", Date.now().toString());
+      } catch (e) {
+        // Ignore
+      }
+
       onShowToast(`Konfirmasi kehadiran berhasil dikirim! ✦`);
 
       if (onSubmitSuccess) {
@@ -138,6 +208,29 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
             style={{ textAlign: "left" }}
             onSubmit={handleSubmit}
           >
+            {/* Honeypot field (hidden from real users) */}
+            <div
+              style={{
+                position: "absolute",
+                left: "-9999px",
+                opacity: 0,
+                height: 0,
+                width: 0,
+                overflow: "hidden",
+                pointerEvents: "none",
+              }}
+              aria-hidden="true"
+            >
+              <input
+                type="text"
+                name="user_confirm_trap"
+                tabIndex={-1}
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                autoComplete="off"
+              />
+            </div>
+
             <div className="field">
               <label htmlFor="rsvpNama">Nama Lengkap</label>
               <input
@@ -145,6 +238,7 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
                 id="rsvpNama"
                 placeholder="Nama Anda"
                 required
+                maxLength={80}
                 data-testid="rsvp-name-input"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -215,10 +309,20 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
                 type="submit"
                 className="btn btn-solid btn-full"
                 data-testid="rsvp-submit-button"
-                disabled={isSubmitting}
-                style={{ flex: 2 }}
+                disabled={isSubmitting || cooldown > 0}
+                style={{
+                  flex: 2,
+                  opacity: cooldown > 0 ? 0.75 : 1,
+                  cursor: cooldown > 0 ? "not-allowed" : "pointer",
+                }}
               >
-                {isSubmitting ? "Menyimpan..." : savedRsvp ? "Perbarui Konfirmasi" : "Kirim Konfirmasi Kehadiran"}
+                {isSubmitting
+                  ? "Menyimpan..."
+                  : cooldown > 0
+                  ? `Tunggu ${cooldown}d...`
+                  : savedRsvp
+                  ? "Perbarui Konfirmasi"
+                  : "Kirim Konfirmasi Kehadiran"}
               </button>
             </div>
           </form>

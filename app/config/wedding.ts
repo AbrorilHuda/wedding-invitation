@@ -76,59 +76,59 @@ export const WEDDING_CONFIG: WeddingConfig = {
       "https://images.unsplash.com/photo-1519741497674-611481863552?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
   },
   bride: {
-    name: env.VITE_BRIDE_NAME || "Sofia",
-    fullName: env.VITE_BRIDE_FULL_NAME || "Sofia Anindya",
+    name: env.VITE_BRIDE_NAME || "Riris",
+    fullName: env.VITE_BRIDE_FULL_NAME || "Nafidatur Riskia",
     order: env.VITE_BRIDE_ORDER || "Putri kedua dari",
-    parents: env.VITE_BRIDE_PARENTS || "Bapak H. Bambang & Ibu Hj. Ratna",
+    parents: env.VITE_BRIDE_PARENTS || "Bapak Juki & Ibu Hotimah",
     instagram: env.VITE_BRIDE_INSTAGRAM || "https://instagram.com",
-    instagramHandle: env.VITE_BRIDE_IG_HANDLE || "@sofiaanindya",
+    instagramHandle: env.VITE_BRIDE_IG_HANDLE || "@riris",
     photo:
       env.VITE_BRIDE_PHOTO ||
       "https://images.unsplash.com/photo-1492175742197-ed20dc5a6bed?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
   },
   event: {
     title: env.VITE_EVENT_TITLE || "Resepsi",
-    dateIso: env.VITE_EVENT_DATE_ISO || "2026-09-20T11:00:00+07:00",
-    dateDisplay: env.VITE_EVENT_DATE_DISPLAY || "Minggu, 20 September 2026",
-    dateShort: env.VITE_EVENT_DATE_SHORT || "20 . 09 . 2026",
-    time: env.VITE_EVENT_TIME || "11.00 — 14.00 WIB",
+    dateIso: env.VITE_EVENT_DATE_ISO || "2026-09-27T11:00:00+07:00",
+    dateDisplay: env.VITE_EVENT_DATE_DISPLAY || "Minggu, 27 September 2026",
+    dateShort: env.VITE_EVENT_DATE_SHORT || "27 . 09 . 2026",
+    time: env.VITE_EVENT_TIME || "08.00 — Selesai WIB",
     venue: env.VITE_EVENT_VENUE || "Ballroom The Grand Estate",
     address: env.VITE_EVENT_ADDRESS || "Jl. Merdeka No. 88, Jakarta Selatan",
     mapsUrl: env.VITE_EVENT_MAPS_URL || "https://maps.google.com/?q=The+Grand+Estate+Jakarta",
-    icsProdId: env.VITE_ICS_PRODID || "-//Miftah & Sofia Wedding//ID",
-    icsSummary: env.VITE_ICS_SUMMARY || "Pernikahan Miftah & Sofia",
+    icsProdId: env.VITE_ICS_PRODID || "-//Miftah & Riris Wedding//ID",
+    icsSummary: env.VITE_ICS_SUMMARY || "Pernikahan Miftah & Riris",
     icsDescription:
-      env.VITE_ICS_DESCRIPTION || "Resepsi Pernikahan Miftah Pratama & Sofia Anindya",
-    icsStart: env.VITE_ICS_START || "20260920T040000Z",
-    icsEnd: env.VITE_ICS_END || "20260920T070000Z",
+      env.VITE_ICS_DESCRIPTION || "Resepsi Pernikahan Miftahus Surur, S.Kom & Nafidatur Riskia",
+    icsStart: env.VITE_ICS_START || "20260927T040000Z",
+    icsEnd: env.VITE_ICS_END || "20260927T070000Z",
   },
   bankAccounts: [
     {
-      bank: env.VITE_GROOM_BANK_NAME || "Bank BCA",
+      bank: env.VITE_GROOM_BANK_NAME || "Dana",
       accountNumber: env.VITE_GROOM_BANK_NO || "1234567890",
       accountHolder: env.VITE_GROOM_BANK_HOLDER
         ? env.VITE_GROOM_BANK_HOLDER.startsWith("a.n.")
           ? env.VITE_GROOM_BANK_HOLDER
           : `a.n. ${env.VITE_GROOM_BANK_HOLDER}`
-        : "a.n. Miftah Pratama",
+        : "a.n. Miftahus Surur",
       testId: "copy-bca-button",
     },
     {
-      bank: env.VITE_BRIDE_BANK_NAME || "Bank Mandiri",
+      bank: env.VITE_BRIDE_BANK_NAME || "Bank BRI",
       accountNumber: env.VITE_BRIDE_BANK_NO || "0987654321",
       accountHolder: env.VITE_BRIDE_BANK_HOLDER
         ? env.VITE_BRIDE_BANK_HOLDER.startsWith("a.n.")
           ? env.VITE_BRIDE_BANK_HOLDER
           : `a.n. ${env.VITE_BRIDE_BANK_HOLDER}`
-        : "a.n. Sofia Anindya",
+        : "a.n. Nafidatur Riskia",
       testId: "copy-mandiri-button",
     },
   ],
   physicalGift: {
-    recipient: env.VITE_GIFT_RECIPIENT || "",
-    phone: env.VITE_GROOM_BANK_NO || "",
+    recipient: env.VITE_GIFT_RECIPIENT || "Miftah / Riris",
+    phone: env.VITE_GIFT_PHONE || "",
     address:
       env.VITE_GIFT_ADDRESS ||
-      "Jl. Melati Indah No. 12, Cilandak Barat, Jakarta Selatan, DKI Jakarta 12430",
+      "Jl. Merdeka No. 88, Jakarta Selatan",
   },
 };

@@ -18,12 +18,17 @@ export function EventDetails({ onShowToast }: EventDetailsProps) {
 
   const handleSaveIcs = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
+    const nowStamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+    const eventUid = `wedding-${groom.name.toLowerCase()}-${bride.name.toLowerCase()}-2026@invitation`;
     const icsContent = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
       `PRODID:${event.icsProdId}`,
       "CALSCALE:GREGORIAN",
+      "METHOD:PUBLISH",
       "BEGIN:VEVENT",
+      `UID:${eventUid}`,
+      `DTSTAMP:${nowStamp}`,
       `SUMMARY:${event.icsSummary}`,
       `DTSTART:${event.icsStart}`,
       `DTEND:${event.icsEnd}`,
@@ -47,12 +52,35 @@ export function EventDetails({ onShowToast }: EventDetailsProps) {
   };
 
   const handleCopyAddress = () => {
+    const textToCopy = `${event.venue}, ${event.address}`;
     if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText(`${event.venue}, ${event.address}`);
+      navigator.clipboard
+        .writeText(textToCopy)
+        .then(() => {
+          setAddressCopied(true);
+          onShowToast("Alamat berhasil disalin ✦");
+          setTimeout(() => setAddressCopied(false), 2000);
+        })
+        .catch(() => fallbackCopyAddress(textToCopy));
+    } else {
+      fallbackCopyAddress(textToCopy);
     }
-    setAddressCopied(true);
-    onShowToast("Alamat berhasil disalin ✦");
-    setTimeout(() => setAddressCopied(false), 2000);
+  };
+
+  const fallbackCopyAddress = (text: string) => {
+    try {
+      const temp = document.createElement("textarea");
+      temp.value = text;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand("copy");
+      document.body.removeChild(temp);
+      setAddressCopied(true);
+      onShowToast("Alamat berhasil disalin ✦");
+      setTimeout(() => setAddressCopied(false), 2000);
+    } catch (err) {
+      onShowToast("Gagal menyalin alamat");
+    }
   };
 
   return (

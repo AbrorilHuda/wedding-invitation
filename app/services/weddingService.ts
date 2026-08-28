@@ -111,16 +111,17 @@ export async function sendWish(data: WishPayload): Promise<Wish> {
   return newWish;
 }
 
+const WISHES_STORAGE_KEY = "wedding_wishes_miftah_riris";
+
 function saveWishToLocal(wish: Wish) {
   try {
     const saved = JSON.parse(
-      localStorage.getItem("wedding_wishes_miftah_sofia") || "[]"
+      localStorage.getItem(WISHES_STORAGE_KEY) ||
+      localStorage.getItem("wedding_wishes_miftah_riris") ||
+      "[]"
     );
     saved.unshift(wish);
-    localStorage.setItem(
-      "wedding_wishes_miftah_sofia",
-      JSON.stringify(saved)
-    );
+    localStorage.setItem(WISHES_STORAGE_KEY, JSON.stringify(saved));
   } catch (e) {
     // Ignore
   }
@@ -189,7 +190,9 @@ function loadLocalWishes(
   fallbackWishes: Wish[]
 ) {
   try {
-    const saved = localStorage.getItem("wedding_wishes_miftah_sofia");
+    const saved =
+      localStorage.getItem(WISHES_STORAGE_KEY) ||
+      localStorage.getItem("wedding_wishes_miftah_riris");
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {

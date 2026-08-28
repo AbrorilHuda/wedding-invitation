@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. KOLEKSI UCAPAN & DOA (GUESTBOOK)
+    match /wishes/{wishId} {
+      // Publik diizinkan membaca ucapan doa pernikahan
+      allow read: if true;
+
+      // Validasi ketat saat tamu mengirim ucapan
+      allow create: if request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() <= 80
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() >= 5
+                    && request.resource.data.message.size() <= 300
+                    && request.resource.data.status in ['Hadir', 'Tidak Hadir'];
+
+      // Dilarang mengedit atau menghapus ucapan yang sudah dikirim oleh publik
+      allow update, delete: if false;
+    }
+
+    // 2. KOLEKSI KONFIRMASI KEHADIRAN (RSVP)
+    match /rsvps/{rsvpId} {
+      // Publik DILARANG membaca daftar RSVP untuk melindungi privasi tamu.
+      // Hanya mempelai/admin yang berhak melihat via Firebase Console / Admin SDK.
+      allow read: if false;
+
+      // Validasi ketat saat tamu mengirim konfirmasi kehadiran
+      allow create: if request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() <= 80
+                    && request.resource.data.status in ['Hadir', 'Tidak Hadir']
+                    && request.resource.data.count is string;
+
+      // Dilarang mengedit atau menghapus konfirmasi dari publik
+      allow update, delete: if false;
+    }
+
+    // 3. TUTUP SEMUA KOLEKSI LAIN SECARA DEFAULT
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

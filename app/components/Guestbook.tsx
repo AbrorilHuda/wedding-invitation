@@ -3,6 +3,7 @@ import type { Wish } from "../types/invitation";
 import { WEDDING_CONFIG } from "../config/wedding";
 import { sendWish, subscribeToWishes, type RsvpPayload } from "../services/weddingService";
 import { AllWishesModal } from "./AllWishesModal";
+import { containsProfanity } from "../utils/contentFilter";
 
 const INITIAL_WISHES: Wish[] = [
   {
@@ -165,7 +166,13 @@ export function Guestbook({ userRsvp: userRsvpProp, onShowToast }: GuestbookProp
       return;
     }
 
-    // 5. Duplicate message check
+    // 5. Profanity & forbidden words check
+    if (containsProfanity(trimmedMessage)) {
+      onShowToast("Pesan mengandung kata tidak pantas. Mohon gunakan bahasa yang sopan.");
+      return;
+    }
+
+    // 6. Duplicate message check
     if (lastSubmittedMsg.current && lastSubmittedMsg.current === trimmedMessage) {
       onShowToast("Anda sudah mengirimkan ucapan ini");
       return;
@@ -235,7 +242,17 @@ export function Guestbook({ userRsvp: userRsvpProp, onShowToast }: GuestbookProp
               <p className="locked-desc">
                 Silakan lakukan konfirmasi kehadiran (RSVP) di atas sebelum menuliskan ucapan &amp; doa untuk mempelai.
               </p>
-              <a href="#rsvp" className="btn btn-solid btn-go-rsvp">
+              <a
+                href="#rsvp"
+                className="btn btn-solid btn-go-rsvp"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const rsvpEl = document.getElementById("rsvp");
+                  if (rsvpEl) {
+                    rsvpEl.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+              >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: "14px", height: "14px" }}>
                   <path d="M12 19V5M5 12l7-7 7 7" />
                 </svg>

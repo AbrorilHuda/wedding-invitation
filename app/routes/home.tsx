@@ -22,13 +22,16 @@ import { FloatControls } from "../components/FloatControls";
 import { AudioPlayer } from "../components/AudioPlayer";
 import { Toast } from "../components/Toast";
 import { WEDDING_CONFIG } from "../config/wedding";
+import { sanitizeGuestName } from "../utils/contentFilter";
 
 export function meta({ location }: Route.MetaArgs) {
   const search = new URLSearchParams(location.search);
-  const to = search.get("to");
+  const rawTo = search.get("to");
+  const cleanedTo = sanitizeGuestName(rawTo);
+  const isCustomGuest = cleanedTo !== "Tamu Undangan";
   const coupleName = `${WEDDING_CONFIG.groom.name} & ${WEDDING_CONFIG.bride.name}`;
-  const guestTitle = to
-    ? `Undangan Pernikahan untuk ${to} - ${coupleName}`
+  const guestTitle = isCustomGuest
+    ? `Undangan Pernikahan untuk ${cleanedTo} - ${coupleName}`
     : `${coupleName} - Undangan Pernikahan`;
 
   return [
@@ -56,7 +59,7 @@ export default function Home() {
   const rawTo = searchParams.get("to");
   const autoOpen = searchParams.get("open") === "1";
 
-  const guestName = rawTo ? decodeURIComponent(rawTo.replace(/\+/g, " ")) : "Tamu Undangan";
+  const guestName = sanitizeGuestName(rawTo);
 
   const [isOpen, setIsOpen] = useState(autoOpen);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -278,7 +281,13 @@ export default function Home() {
         guestName={rawTo ? guestName : undefined}
       />
 
-      <AudioPlayer ref={audioRef} />
+      <AudioPlayer
+        ref={audioRef}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+        onEnded={() => setIsPlaying(false)}
+        onError={() => setIsPlaying(false)}
+      />
 
       <main id="main" className={isOpen ? "show" : ""}>
         <Ayat />
