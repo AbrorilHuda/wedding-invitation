@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import gsap from "gsap";
 
 import { WEDDING_CONFIG } from "../config/wedding";
@@ -13,6 +13,31 @@ interface CoverProps {
 export function Cover({ guestName, isOpen, onOpen, onBeforeOpen }: CoverProps) {
   const coverRef = useRef<HTMLDivElement>(null);
   const introRunRef = useRef(false);
+  const touchStartY = useRef<number | null>(null);
+
+  const handleOpenInvitation = useCallback(() => {
+    if (onBeforeOpen) {
+      onBeforeOpen();
+    }
+
+    if (!coverRef.current) {
+      onOpen();
+      return;
+    }
+
+    gsap.to(coverRef.current, {
+      yPercent: -100,
+      opacity: 0.4,
+      duration: 1.15,
+      ease: "expo.inOut",
+      onComplete: () => {
+        if (coverRef.current) {
+          coverRef.current.style.display = "none";
+        }
+        onOpen();
+      },
+    });
+  }, [onBeforeOpen, onOpen]);
 
   useEffect(() => {
     if (introRunRef.current) return;
@@ -60,28 +85,20 @@ export function Cover({ guestName, isOpen, onOpen, onBeforeOpen }: CoverProps) {
     return () => ctx.revert();
   }, []);
 
-  const handleOpenClick = () => {
-    if (onBeforeOpen) {
-      onBeforeOpen();
-    }
+  // Handle Swipe Up Gesture
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  };
 
-    if (!coverRef.current) {
-      onOpen();
-      return;
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartY.current === null) return;
+    const touchEndY = e.changedTouches[0].clientY;
+    const diff = touchStartY.current - touchEndY;
+    // If swiped up by more than 50px
+    if (diff > 50) {
+      handleOpenInvitation();
     }
-
-    gsap.to(coverRef.current, {
-      yPercent: -100,
-      opacity: 0.4,
-      duration: 1.15,
-      ease: "expo.inOut",
-      onComplete: () => {
-        if (coverRef.current) {
-          coverRef.current.style.display = "none";
-        }
-        onOpen();
-      },
-    });
+    touchStartY.current = null;
   };
 
   if (isOpen && (!coverRef.current || coverRef.current.style.display === "none")) {
@@ -89,13 +106,18 @@ export function Cover({ guestName, isOpen, onOpen, onBeforeOpen }: CoverProps) {
   }
 
   return (
-    <div id="cover" ref={coverRef} style={isOpen ? { display: "none" } : undefined}>
+    <div
+      id="cover"
+      ref={coverRef}
+      style={isOpen ? { display: "none" } : undefined}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <div
         className="cover-bg"
         style={{
-          backgroundImage:
-            "url('./cover.webp')",
-          filter: " brightness(0.50) contrast(1.15)"
+          backgroundImage: "url('./cover.webp')",
+          filter: "brightness(0.50) contrast(1.15)",
         }}
       />
       <div className="cover-shade" />
@@ -124,7 +146,7 @@ export function Cover({ guestName, isOpen, onOpen, onBeforeOpen }: CoverProps) {
 
         <div className="guest-card fade-up">
           <div className="lbl">Kepada Yth. Bapak/Ibu/Saudara/i</div>
-          <div className="nm" id="guestName">
+          <div className="nm" id="guestName" title={guestName || "Tamu Undangan"}>
             {guestName || "Tamu Undangan"}
           </div>
         </div>
@@ -133,8 +155,9 @@ export function Cover({ guestName, isOpen, onOpen, onBeforeOpen }: CoverProps) {
           className="open-btn fade-up"
           id="openBtn"
           data-testid="open-invitation-button"
-          onClick={handleOpenClick}
+          onClick={handleOpenInvitation}
           type="button"
+          aria-label="Buka Undangan Pernikahan"
         >
           Buka Undangan
           <svg
@@ -147,8 +170,29 @@ export function Cover({ guestName, isOpen, onOpen, onBeforeOpen }: CoverProps) {
             <path d="M5 12h14M13 6l6 6-6 6" />
           </svg>
         </button>
-        <div className="cover-scrolltease fade-up">Ketuk untuk membuka</div>
+
+        <div
+          className="cover-scrolltease fade-up"
+          onClick={handleOpenInvitation}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") handleOpenInvitation();
+          }}
+        >
+          <span>Ketuk atau usap ke atas untuk membuka</span>
+          <svg
+            className="swipe-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          >
+            <path d="M18 15l-6-6-6 6" />
+          </svg>
+        </div>
       </div>
     </div>
   );
 }
+

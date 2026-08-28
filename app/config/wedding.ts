@@ -4,6 +4,7 @@ export interface GroomConfig {
   order: string;
   parents: string;
   instagram: string;
+  instagramHandle?: string;
   photo: string;
 }
 
@@ -13,6 +14,7 @@ export interface BrideConfig {
   order: string;
   parents: string;
   instagram: string;
+  instagramHandle?: string;
   photo: string;
 }
 
@@ -39,6 +41,12 @@ export interface BankAccountConfig {
   testId: string;
 }
 
+export interface PhysicalGiftConfig {
+  recipient: string;
+  phone: string;
+  address: string;
+}
+
 export interface WeddingConfig {
   groom: GroomConfig;
   bride: BrideConfig;
@@ -46,6 +54,7 @@ export interface WeddingConfig {
   bankAccounts: BankAccountConfig[];
   musicUrl: string;
   qrisImage: string;
+  physicalGift?: PhysicalGiftConfig;
 }
 
 const env = typeof import.meta !== "undefined" && import.meta.env ? import.meta.env : ({} as Record<string, string | undefined>);
@@ -61,6 +70,7 @@ export const WEDDING_CONFIG: WeddingConfig = {
     order: env.VITE_GROOM_ORDER || "Putra pertama dari",
     parents: env.VITE_GROOM_PARENTS || "Bapak H. Suryadi & Ibu Hj. Kartika",
     instagram: env.VITE_GROOM_INSTAGRAM || "https://instagram.com",
+    instagramHandle: env.VITE_GROOM_IG_HANDLE || "@miftahpratama",
     photo:
       env.VITE_GROOM_PHOTO ||
       "https://images.unsplash.com/photo-1519741497674-611481863552?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
@@ -71,6 +81,7 @@ export const WEDDING_CONFIG: WeddingConfig = {
     order: env.VITE_BRIDE_ORDER || "Putri kedua dari",
     parents: env.VITE_BRIDE_PARENTS || "Bapak H. Bambang & Ibu Hj. Ratna",
     instagram: env.VITE_BRIDE_INSTAGRAM || "https://instagram.com",
+    instagramHandle: env.VITE_BRIDE_IG_HANDLE || "@sofiaanindya",
     photo:
       env.VITE_BRIDE_PHOTO ||
       "https://images.unsplash.com/photo-1492175742197-ed20dc5a6bed?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
@@ -113,4 +124,11 @@ export const WEDDING_CONFIG: WeddingConfig = {
       testId: "copy-mandiri-button",
     },
   ],
+  physicalGift: {
+    recipient: env.VITE_GIFT_RECIPIENT || "",
+    phone: env.VITE_GROOM_BANK_NO || "",
+    address:
+      env.VITE_GIFT_ADDRESS ||
+      "Jl. Melati Indah No. 12, Cilandak Barat, Jakarta Selatan, DKI Jakarta 12430",
+  },
 };

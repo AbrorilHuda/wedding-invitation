@@ -28,8 +28,8 @@ export function meta({ location }: Route.MetaArgs) {
   const to = search.get("to");
   const coupleName = `${WEDDING_CONFIG.groom.name} & ${WEDDING_CONFIG.bride.name}`;
   const guestTitle = to
-    ? `Undangan Pernikahan untuk ${to} — ${coupleName}`
-    : `${coupleName} — Undangan Pernikahan`;
+    ? `Undangan Pernikahan untuk ${to} - ${coupleName}`
+    : `${coupleName} - Undangan Pernikahan`;
 
   return [
     { title: guestTitle },
@@ -46,7 +46,7 @@ export function meta({ location }: Route.MetaArgs) {
     {
       property: "og:image",
       content:
-        "https://images.unsplash.com/photo-1606216794079-73f85bbd57d5?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200",
+        "/og-image.png",
     },
   ];
 }

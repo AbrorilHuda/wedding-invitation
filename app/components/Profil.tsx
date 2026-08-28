@@ -21,85 +21,100 @@ export function Profil() {
           menyatukan cinta dalam ikatan suci.
         </p>
 
-        {/* Groom */}
-        <div style={{ marginTop: "56px" }} className="reveal-el">
-          <div className="arch">
-            <img
-              src={groom.photo}
-              alt={groom.fullName}
-              loading="lazy"
-            />
-          </div>
-          <div className="profile-name serif">{groom.fullName}</div>
-          <div className="profile-role">The Groom</div>
-          <div className="profile-parents">
-            {groom.order}
-            <br />
-            {groom.parents}
-          </div>
-          <div className="socials">
-            <a
-              href={groom.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-testid="groom-instagram"
-              aria-label={`Instagram ${groom.name}`}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
+        <div className="profiles-container">
+          {/* Groom */}
+          <div className="profile-card reveal-el">
+            <div className="arch">
+              <img
+                src={groom.photo}
+                alt={groom.fullName}
+                loading="lazy"
+              />
+            </div>
+            <div className="profile-name serif">{groom.fullName}</div>
+            <div className="profile-role">The Groom</div>
+            <div className="profile-parents">
+              {groom.order}
+              <br />
+              {groom.parents}
+            </div>
+            <div className="socials">
+              <a
+                href={groom.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="groom-instagram"
+                aria-label={`Instagram ${groom.name}`}
+                className="instagram-btn"
               >
-                <rect x="3" y="3" width="18" height="18" rx="5" />
-                <circle cx="12" cy="12" r="4" />
-                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-              </svg>
-            </a>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+                </svg>
+                {groom.instagramHandle && (
+                  <span className="ig-handle">{groom.instagramHandle}</span>
+                )}
+              </a>
+            </div>
           </div>
-        </div>
 
-        {/* Ampersand */}
-        <div className="amp-big reveal-el">&amp;</div>
+          {/* Ampersand Divider */}
+          <div className="amp-divider reveal-el">
+            <span className="amp-line" />
+            <span className="amp-big">&amp;</span>
+            <span className="amp-line" />
+          </div>
 
-        {/* Bride */}
-        <div className="reveal-el">
-          <div className="arch">
-            <img
-              src={bride.photo}
-              alt={bride.fullName}
-              loading="lazy"
-            />
-          </div>
-          <div className="profile-name serif">{bride.fullName}</div>
-          <div className="profile-role">The Bride</div>
-          <div className="profile-parents">
-            {bride.order}
-            <br />
-            {bride.parents}
-          </div>
-          <div className="socials">
-            <a
-              href={bride.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              data-testid="bride-instagram"
-              aria-label={`Instagram ${bride.name}`}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
+          {/* Bride */}
+          <div className="profile-card reveal-el">
+            <div className="arch">
+              <img
+                src={bride.photo}
+                alt={bride.fullName}
+                loading="lazy"
+              />
+            </div>
+            <div className="profile-name serif">{bride.fullName}</div>
+            <div className="profile-role">The Bride</div>
+            <div className="profile-parents">
+              {bride.order}
+              <br />
+              {bride.parents}
+            </div>
+            <div className="socials">
+              <a
+                href={bride.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="bride-instagram"
+                aria-label={`Instagram ${bride.name}`}
+                className="instagram-btn"
               >
-                <rect x="3" y="3" width="18" height="18" rx="5" />
-                <circle cx="12" cy="12" r="4" />
-                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-              </svg>
-            </a>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+                </svg>
+                {bride.instagramHandle && (
+                  <span className="ig-handle">{bride.instagramHandle}</span>
+                )}
+              </a>
+            </div>
           </div>
         </div>
       </div>
     </section>
   );
 }
+

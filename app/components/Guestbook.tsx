@@ -8,20 +8,32 @@ const INITIAL_WISHES: Wish[] = [
     n: "Rizky Ananda",
     h: "Hadir",
     p: "Barakallahu lakuma wa baraka alaikuma. Semoga menjadi keluarga sakinah, mawaddah, warahmah!",
+    createdAt: "2 jam yang lalu",
   },
   {
     id: "2",
     n: "Dewi Lestari",
     h: "Hadir",
     p: `Selamat menempuh hidup baru ${WEDDING_CONFIG.groom.name} & ${WEDDING_CONFIG.bride.name}. Bahagia selalu ya!`,
+    createdAt: "5 jam yang lalu",
   },
   {
     id: "3",
     n: "Fajar Nugroho",
     h: "Tidak Hadir",
-    p: "Maaf belum bisa hadir, tapi doa terbaik selalu menyertai kalian berdua.",
+    p: "Maaf belum bisa hadir langsung, tapi doa terbaik selalu menyertai kalian berdua.",
+    createdAt: "Kemarin",
   },
 ];
+
+function getInitial(name: string): string {
+  if (!name) return "✦";
+  const parts = name.trim().split(" ");
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
 
 interface GuestbookProps {
   initialName?: string;
@@ -51,7 +63,7 @@ export function Guestbook({ initialName = "", onShowToast }: GuestbookProps) {
     if (initialName && !name) {
       setName(initialName);
     }
-  }, [initialName]);
+  }, [initialName, name]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,6 +80,7 @@ export function Guestbook({ initialName = "", onShowToast }: GuestbookProps) {
       n: trimmedName,
       h: "Hadir",
       p: trimmedMessage,
+      createdAt: "Baru saja",
     };
 
     const updated = [newWish, ...wishes];
@@ -107,6 +120,7 @@ export function Guestbook({ initialName = "", onShowToast }: GuestbookProps) {
           onSubmit={handleSubmit}
         >
           <div className="field">
+            <label htmlFor="wishNama">Nama Anda</label>
             <input
               type="text"
               id="wishNama"
@@ -119,6 +133,7 @@ export function Guestbook({ initialName = "", onShowToast }: GuestbookProps) {
           </div>
 
           <div className="field">
+            <label htmlFor="wishPesan">Ucapan &amp; Doa</label>
             <textarea
               id="wishPesan"
               placeholder="Tuliskan ucapan &amp; doa Anda..."
@@ -134,18 +149,26 @@ export function Guestbook({ initialName = "", onShowToast }: GuestbookProps) {
             className="btn btn-solid btn-full"
             data-testid="wish-submit-button"
           >
-            Kirim Ucapan
+            Kirim Ucapan &amp; Doa
           </button>
         </form>
 
         <div className="wish-list" id="wishList" data-testid="wish-list">
           {wishes.map((w) => (
             <div key={w.id || w.n + w.p} className="wish">
-              <div className="top">
-                <span className="nm serif">{w.n}</span>
-                <span className="badge">{w.h}</span>
+              <div className="wish-avatar">{getInitial(w.n)}</div>
+              <div className="wish-content">
+                <div className="top">
+                  <span className="nm serif">{w.n}</span>
+                  <div className="wish-meta">
+                    {w.createdAt && <span className="wish-time">{w.createdAt}</span>}
+                    <span className={`badge ${w.h === "Tidak Hadir" ? "badge-absent" : ""}`}>
+                      {w.h}
+                    </span>
+                  </div>
+                </div>
+                <p>{w.p}</p>
               </div>
-              <p>{w.p}</p>
             </div>
           ))}
         </div>
@@ -153,3 +176,4 @@ export function Guestbook({ initialName = "", onShowToast }: GuestbookProps) {
     </section>
   );
 }
+

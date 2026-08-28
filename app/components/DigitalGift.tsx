@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { WEDDING_CONFIG } from "../config/wedding";
 
 function formatAccountNumber(num: string): string {
-  // Format as 4-digit groups (e.g. 1234 5678 90)
   return num.replace(/(\d{4})(?=\d)/g, "$1 ");
 }
 
@@ -187,20 +186,25 @@ interface DigitalGiftProps {
 export function DigitalGift({ onShowToast }: DigitalGiftProps) {
   const bankAccounts = WEDDING_CONFIG.bankAccounts;
   const qrisImage = WEDDING_CONFIG.qrisImage;
+  const physicalGift = WEDDING_CONFIG.physicalGift;
   const [qrisModalOpen, setQrisModalOpen] = useState(false);
+  const [copiedBankIdx, setCopiedBankIdx] = useState<number | null>(null);
+  const [physicalCopied, setPhysicalCopied] = useState(false);
+  const [physicalOpen, setPhysicalOpen] = useState(false);
 
-  const handleCopy = (accNumber: string, label: string) => {
+  const handleCopy = (accNumber: string, label: string, index: number) => {
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard
         .writeText(accNumber)
         .then(() => {
+          setCopiedBankIdx(index);
           onShowToast(`Nomor ${label} disalin ✦`);
+          setTimeout(() => setCopiedBankIdx(null), 2000);
         })
         .catch(() => {
           onShowToast("Gagal menyalin");
         });
     } else {
-      // Fallback
       try {
         const temp = document.createElement("textarea");
         temp.value = accNumber;
@@ -208,11 +212,24 @@ export function DigitalGift({ onShowToast }: DigitalGiftProps) {
         temp.select();
         document.execCommand("copy");
         document.body.removeChild(temp);
+        setCopiedBankIdx(index);
         onShowToast(`Nomor ${label} disalin ✦`);
+        setTimeout(() => setCopiedBankIdx(null), 2000);
       } catch (err) {
         onShowToast("Gagal menyalin");
       }
     }
+  };
+
+  const handleCopyPhysicalAddress = () => {
+    if (!physicalGift) return;
+    const textToCopy = `Penerima: ${physicalGift.recipient}\nNo. HP: ${physicalGift.phone}\nAlamat: ${physicalGift.address}`;
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(textToCopy);
+    }
+    setPhysicalCopied(true);
+    onShowToast("Alamat pengiriman kado disalin ✦");
+    setTimeout(() => setPhysicalCopied(false), 2000);
   };
 
   return (
@@ -249,10 +266,10 @@ export function DigitalGift({ onShowToast }: DigitalGiftProps) {
 
               <div className="gift-card-footer">
                 <button
-                  className="copy-btn"
+                  className={`copy-btn ${copiedBankIdx === idx ? "copied" : ""}`}
                   data-acc={acc.accountNumber}
                   data-testid={acc.testId}
-                  onClick={() => handleCopy(acc.accountNumber, acc.bank)}
+                  onClick={() => handleCopy(acc.accountNumber, acc.bank, idx)}
                   type="button"
                 >
                   <svg
@@ -261,10 +278,16 @@ export function DigitalGift({ onShowToast }: DigitalGiftProps) {
                     stroke="currentColor"
                     strokeWidth="1.6"
                   >
-                    <rect x="9" y="9" width="12" height="12" rx="2" />
-                    <path d="M5 15V5a2 2 0 0 1 2-2h10" />
+                    {copiedBankIdx === idx ? (
+                      <path d="M20 6L9 17l-5-5" />
+                    ) : (
+                      <>
+                        <rect x="9" y="9" width="12" height="12" rx="2" />
+                        <path d="M5 15V5a2 2 0 0 1 2-2h10" />
+                      </>
+                    )}
                   </svg>
-                  Salin Nomor
+                  {copiedBankIdx === idx ? "Tersalin! ✓" : "Salin Nomor"}
                 </button>
               </div>
             </div>
@@ -329,6 +352,81 @@ export function DigitalGift({ onShowToast }: DigitalGiftProps) {
               </div>
             </div>
           ) : null}
+
+          {/* Physical Gift Delivery Card */}
+          {physicalGift && (
+            <div className="physical-gift-wrapper reveal-el">
+              <button
+                type="button"
+                className="physical-gift-toggle"
+                onClick={() => setPhysicalOpen(!physicalOpen)}
+                aria-expanded={physicalOpen}
+              >
+                <div className="toggle-left">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    className="box-icon"
+                  >
+                    <polyline points="21 8 21 21 3 21 3 8" />
+                    <rect x="1" y="3" width="22" height="5" />
+                    <line x1="10" y1="12" x2="14" y2="12" />
+                  </svg>
+                  <span>Kirim Kado Fisik / Parsel</span>
+                </div>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className={`chevron-icon ${physicalOpen ? "open" : ""}`}
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+
+              {physicalOpen && (
+                <div className="physical-gift-card">
+                  <div className="recipient-row">
+                    <span className="lbl">Penerima:</span>
+                    <strong>{physicalGift.recipient}</strong>
+                  </div>
+                  <div className="phone-row">
+                    <span className="lbl">No. Telepon:</span>
+                    <span>{physicalGift.phone}</span>
+                  </div>
+                  <div className="address-box">
+                    <span className="lbl">Alamat Pengiriman:</span>
+                    <p>{physicalGift.address}</p>
+                  </div>
+                  <button
+                    type="button"
+                    className={`copy-btn physical-copy-btn ${physicalCopied ? "copied" : ""}`}
+                    onClick={handleCopyPhysicalAddress}
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                    >
+                      {physicalCopied ? (
+                        <path d="M20 6L9 17l-5-5" />
+                      ) : (
+                        <>
+                          <rect x="9" y="9" width="12" height="12" rx="2" />
+                          <path d="M5 15V5a2 2 0 0 1 2-2h10" />
+                        </>
+                      )}
+                    </svg>
+                    {physicalCopied ? "Alamat Tersalin ✓" : "Salin Alamat Kado"}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -365,3 +463,4 @@ export function DigitalGift({ onShowToast }: DigitalGiftProps) {
     </section>
   );
 }
+

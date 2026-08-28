@@ -44,31 +44,33 @@ export function LoveStory() {
   return (
     <section className="bg-beige pad" id="story">
       <div className="wrap">
-        <div style={{ textAlign: "center", marginBottom: "64px" }}>
+        <div style={{ textAlign: "center", marginBottom: "50px" }}>
           <span className="num-tag reveal-el">02 — Perjalanan</span>
           <h2 className="title reveal-el" style={{ marginTop: "10px" }}>
             Love Story
           </h2>
         </div>
 
-        {STORY_MOMENTS.map((item, index) => (
-          <div
-            key={item.chapter}
-            className="story-item reveal-el"
-            style={index === STORY_MOMENTS.length - 1 ? { marginBottom: 0 } : undefined}
-          >
-            <div className="story-photo">
-              <div className="story-chapter serif">{item.chapter}</div>
-              <img src={item.image} alt={item.alt} loading="lazy" />
+        <div className="story-timeline">
+          {STORY_MOMENTS.map((item, index) => (
+            <div
+              key={item.chapter}
+              className="story-item reveal-el"
+            >
+              <div className="story-photo">
+                <div className="story-chapter serif">{item.chapter}</div>
+                <img src={item.image} alt={item.alt} loading="lazy" />
+              </div>
+              <div className="story-body">
+                <div className="when">{item.when}</div>
+                <h3 className="serif">{item.title}</h3>
+                <p>{item.desc}</p>
+              </div>
             </div>
-            <div className="story-body">
-              <div className="when">{item.when}</div>
-              <h3 className="serif">{item.title}</h3>
-              <p>{item.desc}</p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </section>
   );
 }
+
