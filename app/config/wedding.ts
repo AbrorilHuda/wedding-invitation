@@ -47,6 +47,8 @@ export interface PhysicalGiftConfig {
   address: string;
 }
 
+import type { StoryMoment, GalleryPhoto } from "../types/invitation";
+
 export interface WeddingConfig {
   groom: GroomConfig;
   bride: BrideConfig;
@@ -55,6 +57,8 @@ export interface WeddingConfig {
   musicUrl: string;
   qrisImage: string;
   physicalGift?: PhysicalGiftConfig;
+  storyMoments: StoryMoment[];
+  galleryPhotos: GalleryPhoto[];
 }
 
 const env = typeof import.meta !== "undefined" && import.meta.env ? import.meta.env : ({} as Record<string, string | undefined>);
@@ -88,10 +92,10 @@ export const WEDDING_CONFIG: WeddingConfig = {
   },
   event: {
     title: env.VITE_EVENT_TITLE || "Resepsi",
-    dateIso: env.VITE_EVENT_DATE_ISO || "2026-09-27T11:00:00+07:00",
+    dateIso: env.VITE_EVENT_DATE_ISO || "2026-09-27T08:00:00+07:00",
     dateDisplay: env.VITE_EVENT_DATE_DISPLAY || "Minggu, 27 September 2026",
     dateShort: env.VITE_EVENT_DATE_SHORT || "27 . 09 . 2026",
-    time: env.VITE_EVENT_TIME || "08.00 — Selesai WIB",
+    time: env.VITE_EVENT_TIME || "08.00 WIB — Selesai",
     venue: env.VITE_EVENT_VENUE || "Ballroom The Grand Estate",
     address: env.VITE_EVENT_ADDRESS || "Jl. Merdeka No. 88, Jakarta Selatan",
     mapsUrl: env.VITE_EVENT_MAPS_URL || "https://maps.google.com/?q=The+Grand+Estate+Jakarta",
@@ -99,7 +103,7 @@ export const WEDDING_CONFIG: WeddingConfig = {
     icsSummary: env.VITE_ICS_SUMMARY || "Pernikahan Miftah & Riris",
     icsDescription:
       env.VITE_ICS_DESCRIPTION || "Resepsi Pernikahan Miftahus Surur, S.Kom & Nafidatur Riskia",
-    icsStart: env.VITE_ICS_START || "20260927T040000Z",
+    icsStart: env.VITE_ICS_START || "20260927T010000Z",
     icsEnd: env.VITE_ICS_END || "20260927T070000Z",
   },
   bankAccounts: [
@@ -131,4 +135,112 @@ export const WEDDING_CONFIG: WeddingConfig = {
       env.VITE_GIFT_ADDRESS ||
       "Jl. Merdeka No. 88, Jakarta Selatan",
   },
+  storyMoments: [
+    {
+      chapter: "I",
+      year: "2021",
+      when: "Maret 2021",
+      title: "Awal Pertemuan",
+      desc: "Takdir mempertemukan kami di sebuah acara kampus. Percakapan singkat yang tak disangka menjadi awal kisah perjalanan yang indah.",
+      image:
+        "https://images.unsplash.com/photo-1758727654358-a90614d694eb?crop=entropy&cs=srgb&fm=jpg&q=85&w=800",
+      alt: "Awal Pertemuan",
+    },
+    {
+      chapter: "II",
+      year: "2022",
+      when: "Desember 2022",
+      title: "Semakin Dekat",
+      desc: "Hari demi hari kami lalui bersama. Belajar saling memahami, berbagi suka dan duka, hingga menemukan kenyamanan dalam setiap langkah.",
+      image:
+        "https://images.unsplash.com/photo-1785033156412-d70febb5caa9?crop=entropy&cs=srgb&fm=jpg&q=85&w=800",
+      alt: "Semakin Dekat",
+    },
+    {
+      chapter: "III",
+      year: "2026",
+      when: "Februari 2026",
+      title: "Sebuah Janji",
+      desc: "Dengan restu kedua orang tua dan keluarga, sebuah komitmen diikrarkan untuk melangkah bersama ke gerbang pernikahan yang suci.",
+      image:
+        "https://images.unsplash.com/photo-1776266100731-b70a9211e081?crop=entropy&cs=srgb&fm=jpg&q=85&w=800",
+      alt: "Sebuah Janji",
+    },
+    {
+      chapter: "IV",
+      year: "2026",
+      when: "September 2026",
+      title: "Menuju Halal",
+      desc: "Kini kami siap menyatukan dua hati dalam ikatan pernikahan yang agung, memohon doa restu dari segenap keluarga dan sahabat terkasih.",
+      image:
+        "https://images.unsplash.com/photo-1775126964671-43b4c1a1c5ce?crop=entropy&cs=srgb&fm=jpg&q=85&w=800",
+      alt: "Menuju Halal",
+    },
+  ],
+  galleryPhotos: [
+    {
+      id: 0,
+      featured: true,
+      tall: true,
+      fullSrc:
+        "https://images.unsplash.com/photo-1519741196428-6a2175fa2557?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200",
+      thumbSrc:
+        "https://images.unsplash.com/photo-1519741196428-6a2175fa2557?crop=entropy&cs=srgb&fm=jpg&q=85&w=800",
+      alt: "Momen Bahagia Miftah & Riris",
+    },
+    {
+      id: 1,
+      tall: false,
+      fullSrc:
+        "https://images.unsplash.com/photo-1758727654358-a90614d694eb?crop=entropy&cs=srgb&fm=jpg&q=85&w=900",
+      thumbSrc:
+        "https://images.unsplash.com/photo-1758727654358-a90614d694eb?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
+      alt: "Senyum Bersama",
+    },
+    {
+      id: 2,
+      tall: false,
+      fullSrc:
+        "https://images.unsplash.com/photo-1541679368093-5c967ac6de11?crop=entropy&cs=srgb&fm=jpg&q=85&w=900",
+      thumbSrc:
+        "https://images.unsplash.com/photo-1541679368093-5c967ac6de11?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
+      alt: "Langkah Beriringan",
+    },
+    {
+      id: 3,
+      tall: false,
+      fullSrc:
+        "https://images.unsplash.com/photo-1785033156412-d70febb5caa9?crop=entropy&cs=srgb&fm=jpg&q=85&w=900",
+      thumbSrc:
+        "https://images.unsplash.com/photo-1785033156412-d70febb5caa9?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
+      alt: "Tatapan Penuh Makna",
+    },
+    {
+      id: 4,
+      tall: true,
+      fullSrc:
+        "https://images.unsplash.com/photo-1775126964671-43b4c1a1c5ce?crop=entropy&cs=srgb&fm=jpg&q=85&w=900",
+      thumbSrc:
+        "https://images.unsplash.com/photo-1775126964671-43b4c1a1c5ce?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
+      alt: "Janji Suci",
+    },
+    {
+      id: 5,
+      tall: false,
+      fullSrc:
+        "https://images.unsplash.com/photo-1776266100731-b70a9211e081?crop=entropy&cs=srgb&fm=jpg&q=85&w=900",
+      thumbSrc:
+        "https://images.unsplash.com/photo-1776266100731-b70a9211e081?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
+      alt: "Kehangatan Cinta",
+    },
+    {
+      id: 6,
+      tall: false,
+      fullSrc:
+        "https://images.unsplash.com/photo-1619422306166-ac08c06b02e3?crop=entropy&cs=srgb&fm=jpg&q=85&w=900",
+      thumbSrc:
+        "https://images.unsplash.com/photo-1619422306166-ac08c06b02e3?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
+      alt: "Hari yang Dinanti",
+    },
+  ],
 };

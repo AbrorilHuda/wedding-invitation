@@ -24,6 +24,7 @@ export function Profil() {
         <div className="profiles-container">
           {/* Groom */}
           <div className="profile-card reveal-el">
+            <div className="profile-role">The Groom</div>
             <div className="arch">
               <img
                 src={groom.photo}
@@ -32,11 +33,10 @@ export function Profil() {
               />
             </div>
             <div className="profile-name serif">{groom.fullName}</div>
-            <div className="profile-role">The Groom</div>
             <div className="profile-parents">
-              {groom.order}
+              <span className="order-text">{groom.order}</span>
               <br />
-              {groom.parents}
+              <strong>{groom.parents}</strong>
             </div>
             <div className="socials">
               <a
@@ -73,6 +73,7 @@ export function Profil() {
 
           {/* Bride */}
           <div className="profile-card reveal-el">
+            <div className="profile-role">The Bride</div>
             <div className="arch">
               <img
                 src={bride.photo}
@@ -81,11 +82,10 @@ export function Profil() {
               />
             </div>
             <div className="profile-name serif">{bride.fullName}</div>
-            <div className="profile-role">The Bride</div>
             <div className="profile-parents">
-              {bride.order}
+              <span className="order-text">{bride.order}</span>
               <br />
-              {bride.parents}
+              <strong>{bride.parents}</strong>
             </div>
             <div className="socials">
               <a

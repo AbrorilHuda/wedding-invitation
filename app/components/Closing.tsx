@@ -37,13 +37,16 @@ export function Closing() {
           <br />
           {WEDDING_CONFIG.bride.name}
         </div>
-        <p className="thanks reveal-el" style={{ marginTop: "24px" }}>
-          Kami yang berbahagia beserta keluarga besar
+        <div className="closing-date reveal-el">
+          <span>{WEDDING_CONFIG.event.dateShort}</span>
+        </div>
+        <p className="thanks reveal-el" style={{ marginTop: "20px" }}>
+          Kami yang berbahagia beserta segenap keluarga besar
           <br />
           kedua mempelai.
         </p>
         <div className="credit reveal-el">
-          Create By AbrorilHuda
+          Created with &hearts; by AbrorilHuda
         </div>
       </div>
     </section>

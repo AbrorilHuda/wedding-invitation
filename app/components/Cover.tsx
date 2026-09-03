@@ -117,18 +117,17 @@ export function Cover({ guestName, isOpen, onOpen, onBeforeOpen }: CoverProps) {
         className="cover-bg"
         style={{
           backgroundImage: "url('/cover.webp')",
-          filter: "brightness(0.50) contrast(1.15)",
+          filter: "brightness(0.48) contrast(1.1)",
         }}
       />
       <div className="cover-shade" />
       <div className="cover-grain" />
 
-      <div className="cover-top">
-        <span className="eyebrow">The Wedding Of</span>
-        <div className="cover-arab">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</div>
-      </div>
-
       <div className="cover-inner">
+        <div className="cover-eyebrow-wrap fade-up">
+          <span className="eyebrow cover-eyebrow">The Wedding Of</span>
+        </div>
+
         <h1 className="cover-names">
           <span className="reveal-line">
             <span>{WEDDING_CONFIG.groom.name}</span>
@@ -140,6 +139,7 @@ export function Cover({ guestName, isOpen, onOpen, onBeforeOpen }: CoverProps) {
             <span>{WEDDING_CONFIG.bride.name}</span>
           </span>
         </h1>
+
         <div className="cover-date reveal-line">
           <span>{WEDDING_CONFIG.event.dateShort}</span>
         </div>

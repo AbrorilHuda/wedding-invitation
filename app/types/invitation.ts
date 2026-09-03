@@ -8,6 +8,7 @@ export interface Wish {
 
 export interface StoryMoment {
   chapter: string;
+  year?: string;
   title: string;
   when: string;
   desc: string;
@@ -21,6 +22,7 @@ export interface GalleryPhoto {
   thumbSrc: string;
   alt: string;
   tall?: boolean;
+  featured?: boolean;
 }
 
 export interface BankAccount {

@@ -237,15 +237,15 @@ export function DigitalGift({ onShowToast }: DigitalGiftProps) {
       <div className="wrap" style={{ textAlign: "center" }}>
         <span className="num-tag reveal-el">07 — Tanda Kasih</span>
         <h2 className="title reveal-el" style={{ marginTop: "10px" }}>
-          Kado Digital
+          Ungkapan Kasih
         </h2>
         <p
           className="lede reveal-el"
           style={{ margin: "16px auto 36px", textAlign: "center" }}
         >
-          Doa restu Anda adalah hadiah terindah. Namun bila ingin memberi tanda
-          kasih secara non-tunai, dapat melalui rekening maupun dompet digital
-          berikut:
+          Doa restu Anda merupakan karunia terindah bagi kami. Bagi keluarga dan
+          sahabat yang ingin memberikan tanda kasih secara non-tunai, dapat
+          melalui rekening maupun dompet digital berikut:
         </p>
 
         <div className="gift-cards-grid">
@@ -253,12 +253,12 @@ export function DigitalGift({ onShowToast }: DigitalGiftProps) {
             <div key={acc.bank + idx} className="gift-card reveal-el">
               <div className="gift-card-top">
                 <BankLogo bankName={acc.bank} />
-                <CardChip />
+                <span className="gift-card-type">Rekening / E-Wallet</span>
               </div>
 
               <div className="gift-card-body">
                 <div className="bank-name-label">{acc.bank}</div>
-                <div className="no" id={`acc${idx + 1}`}>
+                <div className="no serif" id={`acc${idx + 1}`}>
                   {formatAccountNumber(acc.accountNumber)}
                 </div>
                 <div className="an">{acc.accountHolder}</div>

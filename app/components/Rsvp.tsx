@@ -191,7 +191,7 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
               {savedRsvp.status === "Hadir" && ` (${savedRsvp.count})`}
             </div>
             <p className="confirmed-msg">
-              Terima kasih atas konfirmasi Anda. Silakan berikan ucapan &amp; doa di bawah.
+              Terima kasih, konfirmasi kehadiran Anda telah diterima. 🤍
             </p>
             <button
               type="button"
@@ -280,17 +280,46 @@ export function Rsvp({ initialName = "", onShowToast, onSubmitSuccess }: RsvpPro
             {status === "Hadir" && (
               <div className="field">
                 <label htmlFor="rsvpJumlah">Jumlah Tamu</label>
-                <select
-                  id="rsvpJumlah"
-                  data-testid="rsvp-count-select"
-                  value={count}
-                  onChange={(e) => setCount(e.target.value)}
-                >
-                  <option value="1 Orang">1 Orang</option>
-                  <option value="2 Orang">2 Orang</option>
-                  <option value="3 Orang">3 Orang</option>
-                  <option value="4 Orang">4 Orang</option>
-                </select>
+                <div className="guest-stepper">
+                  <button
+                    type="button"
+                    className="stepper-btn"
+                    aria-label="Kurangi jumlah tamu"
+                    onClick={() => {
+                      const num = parseInt(count, 10) || 1;
+                      if (num > 1) setCount(`${num - 1} Orang`);
+                    }}
+                    disabled={parseInt(count, 10) <= 1}
+                  >
+                    −
+                  </button>
+                  <span className="stepper-value serif">{count}</span>
+                  <button
+                    type="button"
+                    className="stepper-btn"
+                    aria-label="Tambah jumlah tamu"
+                    onClick={() => {
+                      const num = parseInt(count, 10) || 1;
+                      if (num < 4) setCount(`${num + 1} Orang`);
+                    }}
+                    disabled={parseInt(count, 10) >= 4}
+                  >
+                    +
+                  </button>
+                  <select
+                    id="rsvpJumlah"
+                    data-testid="rsvp-count-select"
+                    value={count}
+                    onChange={(e) => setCount(e.target.value)}
+                    style={{ position: "absolute", opacity: 0, pointerEvents: "none", width: 0, height: 0 }}
+                    tabIndex={-1}
+                  >
+                    <option value="1 Orang">1 Orang</option>
+                    <option value="2 Orang">2 Orang</option>
+                    <option value="3 Orang">3 Orang</option>
+                    <option value="4 Orang">4 Orang</option>
+                  </select>
+                </div>
               </div>
             )}
 
