@@ -2096,6 +2096,20 @@ h2.title {
   font-weight: 500;
 }
 
+.bank-logo-flat-wrap {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  padding: 0;
+}
+
+.bank-logo-flat {
+  display: block;
+  max-height: 28px;
+  width: auto;
+  object-fit: contain;
+}
+
 .bank-badge {
   display: inline-flex;
   align-items: center;
@@ -2318,17 +2332,14 @@ h2.title {
 /* QRIS STYLES */
 .qris-card {
   text-align: center;
-  background: linear-gradient(135deg, #241e17 0%, #2f251a 100%);
+  background: #ffffff;
 }
 
 .qris-header-badge {
-  background: #ffffff;
-  padding: 5px 12px;
-  border-radius: 8px;
+  background: transparent;
+  padding: 0;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 1.1rem;
 }
 
 .qris-sub {
@@ -2361,17 +2372,19 @@ h2.title {
   background: #ffffff;
   padding: 12px;
   border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 16px rgba(44, 36, 29, 0.08);
   cursor: pointer;
   position: relative;
   overflow: hidden;
   max-width: 210px;
   margin: 0 auto 12px;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .qris-img-container:hover {
-  transform: scale(1.03);
+  transform: scale(1.02);
+  box-shadow: 0 8px 24px rgba(44, 36, 29, 0.12);
 }
 
 .qris-img {
@@ -2383,7 +2396,7 @@ h2.title {
 
 .qris-overlay-hint {
   font-size: 0.58rem;
-  color: #475569;
+  color: var(--muted);
   letter-spacing: 0.05em;
   margin-top: 6px;
   font-weight: 500;
@@ -2391,9 +2404,9 @@ h2.title {
 
 .qris-desc {
   font-size: 0.76rem;
-  color: #cbb692;
-  font-weight: 300;
-  line-height: 1.4;
+  color: var(--muted);
+  font-weight: 400;
+  line-height: 1.5;
   max-width: 320px;
   margin: 0 auto;
 }

@@ -5,173 +5,28 @@ function formatAccountNumber(num: string): string {
   return num.replace(/(\d{4})(?=\d)/g, "$1 ");
 }
 
-function CardChip() {
-  return (
-    <svg
-      width="36"
-      height="26"
-      viewBox="0 0 36 26"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="card-chip"
-    >
-      <rect width="36" height="26" rx="4" fill="url(#chipGrad)" />
-      <rect
-        x="1"
-        y="1"
-        width="34"
-        height="24"
-        rx="3"
-        stroke="#9A7B38"
-        strokeWidth="0.8"
-      />
-      <line x1="0" y1="13" x2="36" y2="13" stroke="#8C6E2D" strokeWidth="0.8" />
-      <line x1="13" y1="0" x2="13" y2="26" stroke="#8C6E2D" strokeWidth="0.8" />
-      <line x1="23" y1="0" x2="23" y2="26" stroke="#8C6E2D" strokeWidth="0.8" />
-      <circle
-        cx="18"
-        cy="13"
-        r="3"
-        fill="#D4AF37"
-        stroke="#7A5E24"
-        strokeWidth="0.8"
-      />
-      <defs>
-        <linearGradient
-          id="chipGrad"
-          x1="0"
-          y1="0"
-          x2="36"
-          y2="26"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#F5D77F" />
-          <stop offset="0.5" stopColor="#D4AF37" />
-          <stop offset="1" stopColor="#AA8222" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-}
+const BANK_LOGOS: Record<string, { src: string; alt: string; height: number }> = {
+  bri: { src: "/images/banks/bri.webp", alt: "Bank BRI", height: 26 },
+  dana: { src: "/images/banks/dana.webp", alt: "DANA", height: 22 },
+  bca: { src: "/images/banks/bca.webp", alt: "BCA", height: 22 },
+  mandiri: { src: "/images/banks/mandiri.webp", alt: "Bank Mandiri", height: 24 },
+};
 
 function BankLogo({ bankName }: { bankName: string }) {
   const name = bankName.toLowerCase();
+  const matchKey = Object.keys(BANK_LOGOS).find((k) => name.includes(k));
 
-  if (name.includes("bri")) {
+  if (matchKey) {
+    const logo = BANK_LOGOS[matchKey];
     return (
-      <div className="bank-badge bri-badge">
-        <svg viewBox="0 0 100 30" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <text
-            x="4"
-            y="22"
-            fill="#00529C"
-            fontSize="22"
-            fontWeight="900"
-            fontFamily="system-ui, -apple-system, sans-serif"
-            letterSpacing="0.05em"
-          >
-            BRI
-          </text>
-          <text
-            x="48"
-            y="21"
-            fill="#F37021"
-            fontSize="10"
-            fontWeight="800"
-            fontFamily="system-ui, -apple-system, sans-serif"
-            letterSpacing="0.1em"
-          >
-            BANK
-          </text>
-        </svg>
-      </div>
-    );
-  }
-
-  if (name.includes("dana")) {
-    return (
-      <div className="bank-badge dana-badge">
-        <svg viewBox="0 0 95 28" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="95" height="28" rx="5" fill="#118EEA" />
-          <text
-            x="47"
-            y="19"
-            fill="#FFFFFF"
-            fontSize="16"
-            fontWeight="900"
-            fontFamily="system-ui, -apple-system, sans-serif"
-            letterSpacing="0.15em"
-            textAnchor="middle"
-          >
-            DANA
-          </text>
-        </svg>
-      </div>
-    );
-  }
-
-  if (name.includes("bca")) {
-    return (
-      <div className="bank-badge bca-badge">
-        <svg viewBox="0 0 90 28" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="90" height="28" rx="5" fill="#0060AF" />
-          <text
-            x="45"
-            y="19"
-            fill="#FFFFFF"
-            fontSize="16"
-            fontWeight="900"
-            fontFamily="system-ui, -apple-system, sans-serif"
-            letterSpacing="0.1em"
-            textAnchor="middle"
-          >
-            BCA
-          </text>
-        </svg>
-      </div>
-    );
-  }
-
-  if (name.includes("mandiri")) {
-    return (
-      <div className="bank-badge mandiri-badge">
-        <svg viewBox="0 0 100 28" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="100" height="28" rx="5" fill="#003D79" />
-          <text
-            x="44"
-            y="19"
-            fill="#FFFFFF"
-            fontSize="13"
-            fontWeight="800"
-            fontFamily="system-ui, -apple-system, sans-serif"
-            textAnchor="middle"
-          >
-            mandiri
-          </text>
-          <path d="M78 8c5 0 9 3 12 8-3-2-7-4-12-4V8z" fill="#F8A01B" />
-        </svg>
-      </div>
-    );
-  }
-
-  if (name.includes("bni")) {
-    return (
-      <div className="bank-badge bni-badge">
-        <svg viewBox="0 0 85 28" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="85" height="28" rx="5" fill="#005E6A" />
-          <text
-            x="42"
-            y="19"
-            fill="#FFFFFF"
-            fontSize="15"
-            fontWeight="900"
-            fontFamily="system-ui, -apple-system, sans-serif"
-            letterSpacing="0.1em"
-            textAnchor="middle"
-          >
-            BNI
-          </text>
-        </svg>
+      <div className="bank-logo-flat-wrap">
+        <img
+          src={logo.src}
+          alt={logo.alt}
+          className="bank-logo-flat"
+          style={{ height: `${logo.height}px`, width: "auto", objectFit: "contain" }}
+          loading="lazy"
+        />
       </div>
     );
   }
@@ -297,10 +152,14 @@ export function DigitalGift({ onShowToast }: DigitalGiftProps) {
           {qrisImage ? (
             <div className="gift-card qris-card reveal-el">
               <div className="gift-card-top">
-                <div className="qris-header-badge">
-                  <span style={{ color: "#EA1C24", fontWeight: 900 }}>QR</span>
-                  <span style={{ color: "#1E293B", fontWeight: 900 }}>IS</span>
-                  <span className="qris-sub">Pembayaran Nasional</span>
+                <div className="bank-logo-flat-wrap">
+                  <img
+                    src="/images/banks/qris.webp"
+                    alt="Logo QRIS"
+                    className="bank-logo-flat qris-logo-flat"
+                    style={{ height: "24px", width: "auto", objectFit: "contain" }}
+                    loading="lazy"
+                  />
                 </div>
                 <span className="qris-gpn-tag">GPN</span>
               </div>
