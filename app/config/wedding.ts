@@ -52,6 +52,8 @@ import type { StoryMoment, GalleryPhoto } from "../types/invitation";
 export interface WeddingConfig {
   groom: GroomConfig;
   bride: BrideConfig;
+  coupleName: string;
+  coupleFullName: string;
   event: EventConfig;
   bankAccounts: BankAccountConfig[];
   musicUrl: string;
@@ -59,18 +61,27 @@ export interface WeddingConfig {
   physicalGift?: PhysicalGiftConfig;
   storyMoments: StoryMoment[];
   galleryPhotos: GalleryPhoto[];
+  siteUrl?: string;
 }
 
 const env = typeof import.meta !== "undefined" && import.meta.env ? import.meta.env : ({} as Record<string, string | undefined>);
 
+const groomName = env.VITE_GROOM_NAME || "Miftah";
+const groomFullName = env.VITE_GROOM_FULL_NAME || "Miftah Pratama";
+const brideName = env.VITE_BRIDE_NAME || "Riris";
+const brideFullName = env.VITE_BRIDE_FULL_NAME || "Nafidatur Riskia";
+
 export const WEDDING_CONFIG: WeddingConfig = {
+  siteUrl: env.VITE_SITE_URL || "",
+  coupleName: `${groomName} & ${brideName}`,
+  coupleFullName: `${groomFullName} & ${brideFullName}`,
   musicUrl:
     env.VITE_MUSIC_URL ||
     "https://cdn.pixabay.com/download/audio/2022/03/10/audio_2c8d4f4b8f.mp3",
   qrisImage: env.VITE_QRIS_IMAGE || "",
   groom: {
-    name: env.VITE_GROOM_NAME || "Miftah",
-    fullName: env.VITE_GROOM_FULL_NAME || "Miftah Pratama",
+    name: groomName,
+    fullName: groomFullName,
     order: env.VITE_GROOM_ORDER || "Putra pertama dari",
     parents: env.VITE_GROOM_PARENTS || "Bapak H. Suryadi & Ibu Hj. Kartika",
     instagram: env.VITE_GROOM_INSTAGRAM || "https://instagram.com",
@@ -80,8 +91,8 @@ export const WEDDING_CONFIG: WeddingConfig = {
       "https://images.unsplash.com/photo-1519741497674-611481863552?crop=entropy&cs=srgb&fm=jpg&q=85&w=600",
   },
   bride: {
-    name: env.VITE_BRIDE_NAME || "Riris",
-    fullName: env.VITE_BRIDE_FULL_NAME || "Nafidatur Riskia",
+    name: brideName,
+    fullName: brideFullName,
     order: env.VITE_BRIDE_ORDER || "Putri kedua dari",
     parents: env.VITE_BRIDE_PARENTS || "Bapak Juki & Ibu Hotimah",
     instagram: env.VITE_BRIDE_INSTAGRAM || "https://instagram.com",

@@ -19,6 +19,7 @@ export const AudioPlayer = forwardRef<HTMLAudioElement, AudioPlayerProps>(
     return (
       <audio
         id="bgm"
+        src={src}
         loop
         preload="auto"
         ref={ref}

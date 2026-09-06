@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { WEDDING_CONFIG } from "../config/wedding";
 
 function formatAccountNumber(num: string): string {
@@ -46,6 +46,24 @@ export function DigitalGift({ onShowToast }: DigitalGiftProps) {
   const [copiedBankIdx, setCopiedBankIdx] = useState<number | null>(null);
   const [physicalCopied, setPhysicalCopied] = useState(false);
   const [physicalOpen, setPhysicalOpen] = useState(false);
+
+  // Lock background scroll and listen for Escape key when QRIS modal is open
+  useEffect(() => {
+    if (!qrisModalOpen) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setQrisModalOpen(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [qrisModalOpen]);
 
   const handleCopy = (accNumber: string, label: string, index: number) => {
     if (navigator?.clipboard?.writeText) {

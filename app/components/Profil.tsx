@@ -38,30 +38,32 @@ export function Profil() {
               <br />
               <strong>{groom.parents}</strong>
             </div>
-            <div className="socials">
-              <a
-                href={groom.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-testid="groom-instagram"
-                aria-label={`Instagram ${groom.name}`}
-                className="instagram-btn"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
+            {groom.instagram && groom.instagram !== "#" && (
+              <div className="socials">
+                <a
+                  href={groom.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="groom-instagram"
+                  aria-label={`Instagram ${groom.name}`}
+                  className="instagram-btn"
                 >
-                  <rect x="3" y="3" width="18" height="18" rx="5" />
-                  <circle cx="12" cy="12" r="4" />
-                  <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-                </svg>
-                {groom.instagramHandle && (
-                  <span className="ig-handle">{groom.instagramHandle}</span>
-                )}
-              </a>
-            </div>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+                  </svg>
+                  {groom.instagramHandle && (
+                    <span className="ig-handle">{groom.instagramHandle}</span>
+                  )}
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Ampersand Divider */}
@@ -87,30 +89,32 @@ export function Profil() {
               <br />
               <strong>{bride.parents}</strong>
             </div>
-            <div className="socials">
-              <a
-                href={bride.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                data-testid="bride-instagram"
-                aria-label={`Instagram ${bride.name}`}
-                className="instagram-btn"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.6"
+            {bride.instagram && bride.instagram !== "#" && (
+              <div className="socials">
+                <a
+                  href={bride.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="bride-instagram"
+                  aria-label={`Instagram ${bride.name}`}
+                  className="instagram-btn"
                 >
-                  <rect x="3" y="3" width="18" height="18" rx="5" />
-                  <circle cx="12" cy="12" r="4" />
-                  <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-                </svg>
-                {bride.instagramHandle && (
-                  <span className="ig-handle">{bride.instagramHandle}</span>
-                )}
-              </a>
-            </div>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+                  </svg>
+                  {bride.instagramHandle && (
+                    <span className="ig-handle">{bride.instagramHandle}</span>
+                  )}
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>

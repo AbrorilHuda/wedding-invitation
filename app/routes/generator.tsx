@@ -251,8 +251,8 @@ export default function Generator() {
     }, 2400);
   };
 
-  const couple = `${WEDDING_CONFIG.groom.name} & ${WEDDING_CONFIG.bride.name}`;
-  const coupleFull = `${WEDDING_CONFIG.groom.fullName} & ${WEDDING_CONFIG.bride.fullName}`;
+  const couple = WEDDING_CONFIG.coupleName;
+  const coupleFull = WEDDING_CONFIG.coupleFullName;
   const eventDate = WEDDING_CONFIG.event.dateDisplay;
   const eventVenue = `${WEDDING_CONFIG.event.venue}, ${WEDDING_CONFIG.event.address}`;
 

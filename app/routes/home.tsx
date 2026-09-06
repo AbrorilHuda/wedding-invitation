@@ -29,28 +29,36 @@ export function meta({ location }: Route.MetaArgs) {
   const rawTo = search.get("to");
   const cleanedTo = sanitizeGuestName(rawTo);
   const isCustomGuest = cleanedTo !== "Tamu Undangan";
-  const coupleName = `${WEDDING_CONFIG.groom.name} & ${WEDDING_CONFIG.bride.name}`;
   const guestTitle = isCustomGuest
-    ? `Undangan Pernikahan untuk ${cleanedTo} - ${coupleName}`
-    : `${coupleName} - Undangan Pernikahan`;
+    ? `Undangan Pernikahan untuk ${cleanedTo} - ${WEDDING_CONFIG.coupleName}`
+    : `${WEDDING_CONFIG.coupleName} - Undangan Pernikahan`;
+  const siteUrl = WEDDING_CONFIG.siteUrl ? WEDDING_CONFIG.siteUrl.replace(/\/$/, "") : "";
+  const ogImageUrl = siteUrl ? `${siteUrl}/og-image.png` : "/og-image.png";
+  const canonicalUrl = siteUrl ? `${siteUrl}${location.pathname}${location.search}` : undefined;
 
   return [
     { title: guestTitle },
     {
       name: "description",
-      content: `Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Anda untuk hadir di hari bahagia kami. ${coupleName} — ${WEDDING_CONFIG.event.dateDisplay}.`,
+      content: `Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Anda untuk hadir di hari bahagia kami. ${WEDDING_CONFIG.coupleName} — ${WEDDING_CONFIG.event.dateDisplay}.`,
     },
     { property: "og:type", content: "website" },
-    { property: "og:title", content: `The Wedding of ${coupleName}` },
+    { property: "og:title", content: guestTitle },
     {
       property: "og:description",
       content: `Merupakan suatu kehormatan bagi kami apabila Anda berkenan hadir. ${WEDDING_CONFIG.event.dateDisplay}.`,
     },
+    { property: "og:image", content: ogImageUrl },
+    { property: "og:image:width", content: "1200" },
+    { property: "og:image:height", content: "630" },
+    ...(canonicalUrl ? [{ property: "og:url", content: canonicalUrl }] : []),
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: guestTitle },
     {
-      property: "og:image",
-      content:
-        "/og-image.png",
+      name: "twitter:description",
+      content: `Merupakan suatu kehormatan bagi kami apabila Anda berkenan hadir. ${WEDDING_CONFIG.event.dateDisplay}.`,
     },
+    { name: "twitter:image", content: ogImageUrl },
   ];
 }
 
