@@ -45,6 +45,53 @@ export function Closing() {
           <br />
           kedua mempelai.
         </p>
+        {/* Supported By / Partners */}
+        <div className="closing-partners reveal-el">
+          <div className="partners-divider">
+            <span className="partners-line" />
+            <span className="partners-label">SUPPORTED BY</span>
+            <span className="partners-line" />
+          </div>
+
+          <div className="partners-list">
+            <a
+              href="https://margasera.id"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="partner-item"
+              title="Margasera - Capture Moments"
+            >
+              <div className="partner-card">
+                <img
+                  src="/images/logo-margasera.png"
+                  alt="Margasera - Capture Moments"
+                  className="partner-logo partner-logo-margasera"
+                  loading="lazy"
+                />
+              </div>
+              <span className="partner-sub">Capture Moments</span>
+            </a>
+
+            <a
+              href="https://madura.dev"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="partner-item"
+              title="MaduraDev - Tech Partner"
+            >
+              <div className="partner-card">
+                <img
+                  src="/images/logo-maduradev.png"
+                  alt="MaduraDev"
+                  className="partner-logo partner-logo-maduradev"
+                  loading="lazy"
+                />
+              </div>
+              <span className="partner-sub">Tech Partner</span>
+            </a>
+          </div>
+        </div>
+
         <div className="credit reveal-el">
           Created with &hearts; by AbrorilHuda
         </div>

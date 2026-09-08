@@ -2549,8 +2549,119 @@ h2.title {
   margin-bottom: 8px;
 }
 
+/* Supported By / Partners */
+.closing-partners {
+  margin-top: 42px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.partners-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.partners-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 180, 143, 0.4), transparent);
+}
+
+.partners-label {
+  font-family: var(--sans);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #c9b48f;
+  white-space: nowrap;
+}
+
+.partners-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 20px;
+}
+
+.partner-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+}
+
+.partner-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 180, 143, 0.35);
+  border-radius: 14px;
+  padding: 10px 20px;
+  height: 52px;
+  min-width: 136px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+
+.partner-item:hover .partner-card {
+  transform: translateY(-3px);
+  border-color: #dcc79f;
+  box-shadow: 0 8px 24px rgba(201, 180, 143, 0.3);
+}
+
+.partner-item:focus-visible .partner-card {
+  outline: 2px solid #dcc79f;
+  outline-offset: 2px;
+}
+
+.partner-logo {
+  display: block;
+  object-fit: contain;
+  filter: contrast(1.02);
+}
+
+.partner-logo-margasera {
+  height: 26px;
+  width: auto;
+  max-width: 110px;
+}
+
+.partner-logo-maduradev {
+  height: 38px;
+  width: auto;
+  max-width: 110px;
+}
+
+.partner-sub {
+  font-family: var(--sans);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #a49175;
+  transition: color 0.25s ease;
+}
+
+.partner-item:hover .partner-sub {
+  color: #f2e7d5;
+}
+
 .credit {
-  margin-top: 50px;
+  margin-top: 36px;
   font-size: 0.6rem;
   letter-spacing: 0.32em;
   text-transform: uppercase;
