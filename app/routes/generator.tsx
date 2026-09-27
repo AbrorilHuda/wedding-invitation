@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router";
 import { WEDDING_CONFIG } from "../config/wedding";
 import { Toast } from "../components/Toast";
+import { StoryVideoGenerator } from "../components/StoryVideoGenerator";
 
 // --- Clean SVG Icons ---
 function IconArrowLeft() {
@@ -186,7 +187,7 @@ export function meta() {
 }
 
 export default function Generator() {
-  const [activeTab, setActiveTab] = useState<"single" | "batch" | "history">("single");
+  const [activeTab, setActiveTab] = useState<"single" | "batch" | "history" | "story">("single");
   const [templateType, setTemplateType] = useState<TemplateType>("formal");
   const [customTemplate, setCustomTemplate] = useState<string>("");
 
@@ -660,6 +661,19 @@ export default function Generator() {
             <IconFileText />
             <span>Daftar Tamu ({guests.length})</span>
           </button>
+          <button
+            type="button"
+            className={`studio-tab-item ${activeTab === "story" ? "active" : ""}`}
+            onClick={() => setActiveTab("story")}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="svg-ic">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
+              <path d="M8 21h8M12 17v4" />
+              <circle cx="9" cy="10" r="1" fill="currentColor" />
+              <path d="M9 10l4-3 3 4" />
+            </svg>
+            <span>Story Video</span>
+          </button>
         </div>
 
         {/* TAB 1: SINGLE MODE */}
@@ -941,6 +955,13 @@ export default function Generator() {
                 </div>
               )}
             </section>
+          </div>
+        )}
+
+        {/* TAB 4: STORY VIDEO */}
+        {activeTab === "story" && (
+          <div className="studio-tab-panel">
+            <StoryVideoGenerator />
           </div>
         )}
       </div>

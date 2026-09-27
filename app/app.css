@@ -3836,3 +3836,442 @@ body.reveal-all .reveal-el {
   font-size: 0.78rem;
   color: var(--ink-soft);
 }
+
+/* ═══════════════════════════════════════════════════
+   STORY VIDEO GENERATOR
+   ═══════════════════════════════════════════════════ */
+
+.svgen-root {
+  width: 100%;
+}
+
+.svgen-header {
+  margin-bottom: 24px;
+}
+
+.svgen-title {
+  font-size: 1.45rem;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.svgen-desc {
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.svgen-desc code {
+  background: rgba(180,138,74,0.12);
+  color: var(--gold-deep);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+}
+
+/* ── Layout ─────────────────────────────────────────── */
+.svgen-layout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .svgen-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Canvas preview ─────────────────────────────────── */
+.svgen-preview-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.svgen-canvas-wrap {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(180,138,74,0.25),
+    0 8px 32px rgba(60,40,20,0.25);
+}
+
+.svgen-canvas {
+  display: block;
+  width: 220px;   /* display size; actual canvas is 540×960 */
+  height: 391px;
+  border-radius: 16px;
+}
+
+.svgen-ratio-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.55);
+  color: rgba(255,255,255,0.8);
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+/* ── Progress bar ───────────────────────────────────── */
+.svgen-progress-wrap {
+  width: 100%;
+  max-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.svgen-progress-bar {
+  width: 100%;
+  height: 5px;
+  background: rgba(180,138,74,0.15);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.svgen-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 3px;
+  transition: width 0.1s linear;
+}
+
+.svgen-progress-label {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ── Status message ─────────────────────────────────── */
+.svgen-status {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  text-align: center;
+  max-width: 220px;
+  line-height: 1.5;
+}
+
+/* ── Controls column ────────────────────────────────── */
+.svgen-controls-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Info card ──────────────────────────────────────── */
+.svgen-info-card {
+  background: linear-gradient(135deg, rgba(180,138,74,0.08) 0%, rgba(180,138,74,0.04) 100%);
+  border: 1px solid rgba(180,138,74,0.2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.svgen-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.svgen-info-row span {
+  color: var(--muted);
+}
+
+.svgen-info-row strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ── Control group ──────────────────────────────────── */
+.svgen-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.svgen-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.svgen-label-val {
+  background: rgba(180,138,74,0.15);
+  color: var(--gold-deep);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* ── Range slider ───────────────────────────────────── */
+.svgen-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(
+    90deg,
+    var(--gold) 0%,
+    var(--gold-light) 100%
+  );
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.svgen-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--gold);
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(180,138,74,0.4);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.svgen-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.svgen-range:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.svgen-range-hints {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--muted);
+  padding: 0 2px;
+}
+
+/* ── Photo grid ─────────────────────────────────────── */
+.svgen-photo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.svgen-photo-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  background: var(--cream-2);
+  transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+  position: relative;
+}
+
+.svgen-photo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.svgen-photo-thumb.active {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(180,138,74,0.25);
+  transform: scale(1.06);
+}
+
+.svgen-photo-thumb:hover:not(:disabled) {
+  transform: scale(1.06);
+}
+
+.svgen-photo-thumb:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.svgen-photo-none {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--muted);
+  background: rgba(180,138,74,0.06);
+  border: 1px dashed rgba(180,138,74,0.3);
+}
+
+.svgen-photo-none.active {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* ── Toggle switch ──────────────────────────────────── */
+.svgen-toggle-label {
+  cursor: pointer;
+}
+
+.svgen-toggle {
+  width: 42px;
+  height: 24px;
+  border-radius: 12px;
+  background: rgba(180,138,74,0.2);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.svgen-toggle.on {
+  background: var(--gold);
+}
+
+.svgen-toggle:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.svgen-toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  transition: left 0.2s;
+  display: block;
+}
+
+.svgen-toggle.on .svgen-toggle-knob {
+  left: 21px;
+}
+
+.svgen-toggle-note {
+  font-size: 0.75rem;
+  color: var(--muted);
+  background: rgba(180,138,74,0.06);
+  border-left: 3px solid var(--gold-light);
+  border-radius: 4px;
+  padding: 8px 10px;
+  line-height: 1.5;
+}
+
+/* ── Action buttons ─────────────────────────────────── */
+.svgen-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.svgen-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.svgen-btn-primary {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(180,138,74,0.35);
+}
+
+.svgen-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(180,138,74,0.5);
+}
+
+.svgen-btn-secondary {
+  background: rgba(180,138,74,0.1);
+  color: var(--gold-deep);
+  border: 1px solid rgba(180,138,74,0.3);
+}
+
+.svgen-btn-secondary:hover {
+  background: rgba(180,138,74,0.18);
+}
+
+.svgen-btn-danger {
+  background: rgba(185,28,28,0.1);
+  color: #b91c1c;
+  border: 1px solid rgba(185,28,28,0.25);
+}
+
+.svgen-btn-danger:hover {
+  background: rgba(185,28,28,0.18);
+}
+
+/* Recording indicator dot */
+.svgen-rec-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ef4444;
+  animation: svgen-blink 1s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes svgen-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+/* ── Notes section ──────────────────────────────────── */
+.svgen-notes {
+  background: rgba(180,138,74,0.05);
+  border: 1px solid rgba(180,138,74,0.15);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+.svgen-notes p {
+  margin-bottom: 6px;
+}
+
+.svgen-notes ol {
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 8px;
+}
+
+.svgen-note-warn {
+  color: #92400e;
+  background: rgba(251,191,36,0.1);
+  border-left: 3px solid #f59e0b;
+  padding: 6px 10px;
+  border-radius: 4px;
+  margin-top: 6px;
+  margin-bottom: 0 !important;
+}
